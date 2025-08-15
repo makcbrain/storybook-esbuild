@@ -1,7 +1,12 @@
 {
   "name": "storybook-builder-esbuild",
-  "module": "src/index.ts",
+  "module": "dist/index.js",
   "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": ["dist"],
   "devDependencies": {
     "@types/bun": "latest",
     "esbuild": "0.25.9",
