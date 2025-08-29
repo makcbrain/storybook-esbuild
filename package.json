@@ -1,19 +1,17 @@
 {
-  "name": "storybook-builder-esbuild",
-  "module": "dist/index.js",
+  "name": "@makcbrain/storybook-monorepo",
+  "private": true,
   "type": "module",
-  "main": "dist/index.js",
-  "exports": {
-    ".": "./dist/index.js"
-  },
-  "files": ["dist"],
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "@types/bun": "latest",
     "esbuild": "0.25.9",
     "typescript": "5.9.2"
   },
-  "peerDependencies": {
-    "esbuild": "^0",
-    "storybook": "^9"
+  "packageManager": "bun@1.2.20",
+  "engines": {
+    "bun": ">=1.2.20"
   }
 }
