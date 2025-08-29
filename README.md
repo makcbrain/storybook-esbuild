@@ -1,4 +1,4 @@
-# storybook-builder-esbuild
+# storybook-esbuild
 
 To install dependencies:
 
