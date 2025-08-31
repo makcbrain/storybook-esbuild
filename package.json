@@ -1,0 +1,14 @@
+{
+  "name": "storybook-builder-esbuild",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "esbuild": "0.25.9",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "esbuild": "^0",
+    "storybook": "^9"
+  }
+}
