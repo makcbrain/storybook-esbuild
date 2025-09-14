@@ -9,7 +9,7 @@ This is a monorepo for Storybook framework extensions, specifically focused on R
 **Repository Structure:**
 - Root package.json defines the monorepo with workspaces in `packages/*`
 - `packages/builder-esbuild/` - Builder package for Storybook with esbuild support (@makcbrain/builder-esbuild)
-- `packages/storybook-framework-react-esbuild/` - Framework package for Storybook with React and esbuild support (@makcbrain/storybook-framework-react-esbuild)
+- `packages/storybook-framework-react-esbuild/` - Framework package for Storybook with React and esbuild support (@makcbrain/storybook-framework-react-esbuilfld)
 - `stories/` - Test stories and components for Storybook development
 
 **Current Development Status:**
@@ -44,3 +44,14 @@ The project uses modern TypeScript with strict settings:
 - Strict mode enabled with additional safety checks
 - No emit (bundler handles compilation)
 - Import extensions allowed for bundler compatibility
+
+## Claude Instructions
+
+**Dependency Management:**
+- Always install dependencies with exact versions using the `-E` flag: `bun add -E <package>`
+- This ensures consistent builds across different environments and prevents version drift
+
+**Development Guidelines:**
+- Follow the existing code patterns and architecture
+- Maintain TypeScript strict mode compliance
+- Use Bun for all package management and runtime operations

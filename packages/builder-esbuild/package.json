@@ -1,14 +1,15 @@
 {
-  "name": "@makcbrain/builder-esbuild",
-  "version": "0.1.0",
-  "author": "Maksim Kadochnikov <makс.brain@gmail.com>",
-  "description": "Builder for Storybook with supporting esbuild",
-  "license": "MIT",
-  "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist", "LICENSE"
-  ]
+	"name": "@makcbrain/builder-esbuild",
+	"version": "0.1.0",
+	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
+	"description": "Builder for Storybook with supporting esbuild",
+	"license": "MIT",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist",
+		"LICENSE"
+	]
 }

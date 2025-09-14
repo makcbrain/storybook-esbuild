@@ -1,25 +1,32 @@
 {
-  "name": "@makcbrain/storybook-monorepo",
-  "devDependencies": {
-    "@storybook/react-vite": "9.1.5",
-    "@types/bun": "latest",
-    "esbuild": "0.25.9",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "storybook": "9.1.5",
-    "typescript": "5.9.2"
-  },
-  "engines": {
-    "bun": ">=1.2.20"
-  },
-  "packageManager": "bun@1.2.20",
-  "private": true,
-  "type": "module",
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  }
+	"name": "@makcbrain/storybook-monorepo",
+	"devDependencies": {
+		"@biomejs/biome": "2.2.4",
+		"@storybook/react-vite": "9.1.5",
+		"@types/bun": "latest",
+		"esbuild": "0.25.9",
+		"husky": "9.1.7",
+		"react": "19.1.1",
+		"react-dom": "19.1.1",
+		"storybook": "9.1.5",
+		"typescript": "5.9.2"
+	},
+	"engines": {
+		"bun": ">=1.2.20"
+	},
+	"packageManager": "bun@1.2.20",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"lint": "bunx @biomejs/biome check --write",
+		"typecheck": "bunx tsc",
+		"test": "bun test --no-fail-fast",
+		"storybook": "storybook dev -p 6006",
+		"build-storybook": "storybook build",
+		"precommit": "bun run lint && git add . && bun run typecheck && bun run test",
+		"prepare": "husky"
+	}
 }
