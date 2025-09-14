@@ -1,17 +1,20 @@
 {
   "name": "@makcbrain/storybook-monorepo",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "esbuild": "0.25.9",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "storybook": "9.1.5",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "bun": ">=1.2.20"
+  },
+  "packageManager": "bun@1.2.20",
   "private": true,
   "type": "module",
   "workspaces": [
     "packages/*"
-  ],
-  "devDependencies": {
-    "@types/bun": "latest",
-    "esbuild": "0.25.9",
-    "typescript": "5.9.2"
-  },
-  "packageManager": "bun@1.2.20",
-  "engines": {
-    "bun": ">=1.2.20"
-  }
+  ]
 }
