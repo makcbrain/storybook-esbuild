@@ -1,5 +1,5 @@
 {
-  "name": "@makcbrain/storybook-react-esbuild",
+  "name": "@makcbrain/storybook-framework-react-esbuild",
   "version": "0.1.0",
   "author": "Maksim Kadochnikov <makс.brain@gmail.com>",
   "description": "Framework for Storybook with supporting React and esbuild",
