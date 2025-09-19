@@ -46,7 +46,14 @@
 				"organizeImports": {
 					"level": "on",
 					"options": {
-						"groups": [":PACKAGE:", ":BLANK_LINE:", "**"]
+						"groups": [
+							":PACKAGE_WITH_PROTOCOL:",
+							":PACKAGE:",
+							":BLANK_LINE:",
+							["**", "!**/*.css"],
+							":BLANK_LINE:",
+							"**/*.css"
+						]
 					}
 				}
 			}

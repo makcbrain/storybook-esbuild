@@ -21,7 +21,7 @@
 		"packages/*"
 	],
 	"scripts": {
-		"lint": "bunx @biomejs/biome check --write",
+		"lint": "bunx biome check --write",
 		"typecheck": "bunx tsc",
 		"test": "bun test --no-fail-fast",
 		"storybook": "storybook dev -p 6006",
