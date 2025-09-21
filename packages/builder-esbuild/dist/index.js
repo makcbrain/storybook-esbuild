@@ -1,14 +1,12 @@
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { type BuildContext, build as esbuildBuild, context as esbuildContext } from 'esbuild';
-import type { Middleware, Options } from 'storybook/internal/types';
+import { build as esbuildBuild, context as esbuildContext } from 'esbuild';
 
 import packageJson from '../package.json';
-import type { EsbuildBuilder } from './types';
 
 export * from './types';
 
-const iframeHandler = (options: Options, ctx: BuildContext): Middleware => {
+const iframeHandler = (options, ctx2) => {
 	return async (req, res) => {
 		console.log('=== iframeHandler', req);
 		const iframeHtml = await readFile(
@@ -17,27 +15,21 @@ const iframeHandler = (options: Options, ctx: BuildContext): Middleware => {
 				encoding: 'utf8',
 			},
 		);
-
 		res.setHeader('Content-Type', 'text/html');
 		res.statusCode = 200;
 		res.write(iframeHtml);
 		res.end();
 	};
 };
-
-let ctx: BuildContext;
-
-export const bail = async (): Promise<void> => {
+let ctx;
+const bail = async () => {
 	return ctx?.dispose();
 };
-
-export const start: EsbuildBuilder['start'] = async (params) => {
+const start = async (params) => {
 	const { startTime, options, router, server } = params;
 	console.log('=== start', params);
 	ctx = await esbuildContext(options);
-
 	router.get('/iframe.html', iframeHandler(options, ctx));
-
 	return {
 		bail,
 		stats: {
@@ -50,7 +42,7 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 		totalTime: process.hrtime(startTime),
 	};
 };
-
-export const build: EsbuildBuilder['build'] = async ({ options }) => {
+const build = async ({ options }) => {
 	await esbuildBuild(options);
 };
+export { bail, build, start };

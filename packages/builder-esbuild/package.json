@@ -1,5 +1,5 @@
 {
-	"name": "@makcbrain/builder-esbuild",
+	"name": "@makcbrain/storybook-builder-esbuild",
 	"version": "0.1.0",
 	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
 	"description": "Builder for Storybook with supporting esbuild",
@@ -11,6 +11,16 @@
 	"files": [
 		"dist",
 		"assets",
-		"LICENSE"
-	]
+		"LICENSE",
+		"package.json"
+	],
+	"exports": {
+		".": {
+			"default": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "bun run src/build.ts && bunx tsc"
+	}
 }

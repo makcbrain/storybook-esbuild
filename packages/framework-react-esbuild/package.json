@@ -10,6 +10,11 @@
 	"types": "./dist/index.d.ts",
 	"files": [
 		"dist",
-		"LICENSE"
-	]
+		"LICENSE",
+		"package.json"
+	],
+	"dependencies": {
+		"@storybook/react": "9.1.7",
+		"@makcbrain/storybook-builder-esbuild": "workspace:*"
+	}
 }
