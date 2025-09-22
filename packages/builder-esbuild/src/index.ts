@@ -8,9 +8,9 @@ import type { EsbuildBuilder } from './types';
 
 export * from './types';
 
-const iframeHandler = (options: Options, ctx: BuildContext): Middleware => {
+const iframeHandler = (options: Options): Middleware => {
 	return async (req, res) => {
-		console.log('=== iframeHandler', req);
+		console.log('=== iframeHandler', req, options);
 		const iframeHtml = await readFile(
 			fileURLToPath(import.meta.resolve(`${packageJson.name}/assets/iframe.html`)),
 			{
@@ -32,11 +32,11 @@ export const bail = async (): Promise<void> => {
 };
 
 export const start: EsbuildBuilder['start'] = async (params) => {
-	const { startTime, options, router, server } = params;
+	const { startTime, options, router } = params;
 	console.log('=== start', params);
 	ctx = await esbuildContext(options);
 
-	router.get('/iframe.html', iframeHandler(options, ctx));
+	router.get('/iframe.html', iframeHandler(options));
 
 	return {
 		bail,
