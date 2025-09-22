@@ -16,5 +16,14 @@
 	"dependencies": {
 		"@storybook/react": "9.1.7",
 		"@makcbrain/storybook-builder-esbuild": "workspace:*"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "rm -rf dist && bun run build.ts && bunx tsc"
 	}
 }
