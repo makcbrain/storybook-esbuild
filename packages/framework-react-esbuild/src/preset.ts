@@ -3,14 +3,12 @@ import type { PresetProperty } from 'storybook/internal/types';
 import type { StorybookConfig } from './types';
 
 export const core: PresetProperty<'core'> = {
-	builder: import.meta.resolve('@makcbrain/storybook-builder-esbuild'),
-	renderer: import.meta.resolve('@storybook/react/preset'),
+	builder: '@makcbrain/storybook-builder-esbuild',
+	renderer: '@storybook/react/preset',
 };
 
-export const esbuildFinal: NonNullable<StorybookConfig['esbuildFinal']> = async (
-	config,
-	// { presets },
-) => {
+export const esbuildFinal: StorybookConfig['esbuildFinal'] = async (config, options) => {
+	console.log('=== esbuildFinal', config, options);
 	const plugins = [...(config?.plugins ?? [])];
 
 	// // Add docgen plugin

@@ -1,5 +1,6 @@
 import { dirname, join } from 'node:path';
-import type { StorybookConfig } from '@storybook/react-vite';
+// import type { StorybookConfig } from '@storybook/react-vite';
+import type { StorybookConfig } from '@makcbrain/storybook-framework-react-esbuild';
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -12,7 +13,8 @@ const config: StorybookConfig = {
 	stories: ['../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 	addons: [],
 	framework: {
-		name: getAbsolutePath('@storybook/react-vite'),
+		// name: getAbsolutePath('@storybook/react-vite'),
+		name: '@makcbrain/storybook-framework-react-esbuild',
 		options: {},
 	},
 };

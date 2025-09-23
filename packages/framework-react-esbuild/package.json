@@ -25,7 +25,8 @@
 		"./preset": {
 			"types": "./dist/preset.d.ts",
 			"default": "./dist/preset.js"
-		}
+		},
+		"./package.json": "./package.json"
 	},
 	"scripts": {
 		"build": "rm -rf dist && bun run build.ts && bunx tsc"

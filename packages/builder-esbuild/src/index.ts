@@ -3,10 +3,10 @@ import { fileURLToPath } from 'node:url';
 import { type BuildContext, build as esbuildBuild, context as esbuildContext } from 'esbuild';
 import type { Middleware, Options } from 'storybook/internal/types';
 
-import packageJson from '../package.json';
+import packageJson from '../package.json' with { type: 'json' };
 import type { EsbuildBuilder } from './types';
 
-export * from './types';
+export type * from './types';
 
 const iframeHandler = (options: Options): Middleware => {
 	return async (req, res) => {
