@@ -1,3 +1,3 @@
 import { build } from '../../tools/build.ts';
 
-await build({ entryPoints: ['src/index.ts'] });
+await build({ entryPoints: ['src/index.ts', 'src/preset.ts'] });
