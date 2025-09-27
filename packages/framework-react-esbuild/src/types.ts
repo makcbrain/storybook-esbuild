@@ -1,4 +1,3 @@
-import type docgenTypescript from '@joshwooding/vite-plugin-react-docgen-typescript';
 import type { BuilderOptions, StorybookConfigEsbuild } from '@makcbrain/storybook-builder-esbuild';
 import type {
 	CompatibleString,
@@ -7,10 +6,12 @@ import type {
 } from 'storybook/internal/types';
 
 type FrameworkName = CompatibleString<'@makcbrain/storybook-framework-react-esbuild'>;
-type BuilderName = CompatibleString<'@makcbrain/storybook-builder-esbuild'>;
 
 export type FrameworkOptions = {
 	builder?: BuilderOptions;
+	/**
+	 * Enables <StrictMode> for React.
+	 */
 	strictMode?: boolean;
 	/**
 	 * Use React's legacy root API to mount components
@@ -31,14 +32,6 @@ type StorybookConfigFramework = {
 				name: FrameworkName;
 				options: FrameworkOptions;
 		  };
-	core?: StorybookConfigBase['core'] & {
-		builder?:
-			| BuilderName
-			| {
-					name: BuilderName;
-					options: BuilderOptions;
-			  };
-	};
 };
 
 type TypescriptOptions = TypescriptOptionsBase & {
@@ -48,8 +41,6 @@ type TypescriptOptions = TypescriptOptionsBase & {
 	 * @default `'react-docgen'`
 	 */
 	reactDocgen: 'react-docgen-typescript' | 'react-docgen' | false;
-	/** Configures `@joshwooding/vite-plugin-react-docgen-typescript` */
-	reactDocgenTypescriptOptions: Parameters<typeof docgenTypescript>[0];
 };
 
 /** The interface for Storybook configuration in `main.ts` files. */

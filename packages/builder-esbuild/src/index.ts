@@ -9,19 +9,22 @@ import {
 import type { Middleware, Options } from 'storybook/internal/types';
 
 import packageJson from '../package.json' with { type: 'json' };
+import { transformIframeHtml } from './transform-iframe-html.ts';
 import type { EsbuildBuilder } from './types';
 
 export type * from './types';
 
-const iframeHandler = (_options: Options): Middleware => {
+const iframeHandler = (options: Options): Middleware => {
 	return async (_req, res) => {
 		console.log('=== iframeHandler');
-		const iframeHtml = await readFile(
+		let iframeHtml = await readFile(
 			fileURLToPath(import.meta.resolve(`${packageJson.name}/assets/iframe.html`)),
 			{
 				encoding: 'utf8',
 			},
 		);
+
+		iframeHtml = await transformIframeHtml(iframeHtml, options);
 
 		res.setHeader('Content-Type', 'text/html');
 		res.statusCode = 200;
@@ -46,7 +49,6 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 
 	const finalConfig = await presets.apply('esbuildFinal', config, options);
 
-	console.log('=== builder start finalConfig', finalConfig);
 	ctx = await esbuildContext(finalConfig);
 
 	router.get('/iframe.html', iframeHandler(options));

@@ -14,7 +14,4 @@ export type StorybookConfigEsbuild = {
 	esbuildFinal?: EsbuildFinal;
 };
 
-export type BuilderOptions = {
-	/** Path to `esbuild.config.js` file, relative to `process.cwd()`. */
-	esbuildConfigPath?: string;
-};
+export type BuilderOptions = {};
