@@ -1,6 +1,6 @@
 import type { PresetProperty } from 'storybook/internal/types';
 
-import type { StorybookConfig } from './types';
+import type { StorybookConfig } from './types.ts';
 
 export const core: PresetProperty<'core'> = {
 	builder: '@makcbrain/storybook-builder-esbuild',

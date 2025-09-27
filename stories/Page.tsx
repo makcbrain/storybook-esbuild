@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Header } from './Header';
+import { Header } from './Header.js';
 
 import './page.css';
 

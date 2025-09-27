@@ -9,10 +9,10 @@ import {
 import type { Middleware, Options } from 'storybook/internal/types';
 
 import packageJson from '../package.json' with { type: 'json' };
-import { transformIframeHtml } from './transform-iframe-html.ts';
-import type { EsbuildBuilder } from './types';
+import { transformIframeHtml } from './transform-iframe-html.js';
+import type { EsbuildBuilder } from './types.ts';
 
-export type * from './types';
+export type * from './types.ts';
 
 const iframeHandler = (options: Options): Middleware => {
 	return async (_req, res) => {
