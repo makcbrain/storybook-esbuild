@@ -14,4 +14,4 @@ export type StorybookConfigEsbuild = {
 	esbuildFinal?: EsbuildFinal;
 };
 
-export type BuilderOptions = {};
+export type BuilderOptions = never;
