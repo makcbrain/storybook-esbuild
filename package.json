@@ -25,7 +25,7 @@
 		"lint": "bunx biome check --write",
 		"typecheck": "bunx tsc --noEmit",
 		"test": "bun test --no-fail-fast",
-		"storybook": "storybook dev -p 6006",
+		"storybook": "bunx storybook dev -p 6006",
 		"build-storybook": "storybook tools",
 		"precommit": "bun run lint && git add . && bun run typecheck && bun run test",
 		"prepare": "husky"

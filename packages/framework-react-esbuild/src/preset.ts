@@ -7,8 +7,8 @@ export const core: PresetProperty<'core'> = {
 	renderer: '@storybook/react/preset',
 };
 
-export const esbuildFinal: StorybookConfig['esbuildFinal'] = async (config, options) => {
-	console.log('=== esbuildFinal', config, options);
+export const esbuildFinal: StorybookConfig['esbuildFinal'] = async (config) => {
+	console.log('=== esbuildFinal framework', config);
 	const plugins = [...(config?.plugins ?? [])];
 
 	// // Add docgen plugin
