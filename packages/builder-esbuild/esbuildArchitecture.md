@@ -75,27 +75,28 @@ const importFn = async (path) => {
 │       port: 0  // Auto port                                     │
 │     })                                                          │
 │     → Starts ESBuild's built-in dev server                      │
+│     → Returns { host, port } for direct browser access          │
 │                                                                 │
-│  4. router.use('/esbuild-out', proxy(ctx.serve))                │
-│     → Proxies requests to ESBuild server                        │
-│                                                                 │
-│  5. router.get('/iframe.html', serveIframeHTML)                 │
-│     → Serves HTML with inline initialization script             │
+│  4. router.get('/iframe.html', serveIframeHTML)                 │
+│     → Serves HTML with inline importFn initialization           │
+│     → importFn defined in <script> tag with ESBuild URLs        │
 └─────────────────────────────────────────────────────────────────┘
                              │
                              │ Module requests
                              ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │ ESBuild Dev Server (ctx.serve)                                  │
+│ http://localhost:XXXX (auto-selected port)                      │
 │                                                                 │
-│  GET /esbuild-out/src/Button.stories.js                         │
+│  GET /src/Button.stories.js                                     │
 │  → Returns compiled ESM module                                  │
 │                                                                 │
-│  GET /esbuild-out/src/Button.js                                 │
+│  GET /src/Button.js                                             │
 │  → Returns dependencies (via code splitting)                    │
 │                                                                 │
 │  + Automatic watch & rebuild                                    │
 │  + Incremental compilation                                      │
+│  + Direct browser access (no proxy needed)                      │
 └─────────────────────────────────────────────────────────────────┘
                              │
                              │ import() requests
@@ -103,20 +104,20 @@ const importFn = async (path) => {
 ┌─────────────────────────────────────────────────────────────────┐
 │ iframe.html (Preview)                                           │
 │                                                                 │
-│  <script type="module">                                         │
-│    import { PreviewWeb } from 'storybook/preview-api';          │
+│  <script>                                                       │
+│    // importFn initialized inline with story paths              │
+│    window.__STORYBOOK_IMPORT_FN__ = (function() {               │
+│      const importers = {                                        │
+│        './src/Button.stories.js':                               │
+│          () => import('http://localhost:XXXX/src/Button...'),   │
+│        // ... all stories                                       │
+│      };                                                         │
+│      return async (path) => await importers[path]();            │
+│    })();                                                        │
+│  </script>                                                      │
 │                                                                 │
-│    const importFn = async (path) => {                           │
-│      // Dynamic import → request to ESBuild server              │
-│      return await import('/esbuild-out/' + path);               │
-│    };                                                           │
-│                                                                 │
-│    const getProjectAnnotations = () => { /* ... */ };           │
-│                                                                 │
-│    window.__STORYBOOK_PREVIEW__ = new PreviewWeb(               │
-│      importFn,                                                  │
-│      getProjectAnnotations                                      │
-│    );                                                           │
+│  <script type="module" src="http://localhost:XXXX/virtual:app"> │
+│    // virtual:app uses window.__STORYBOOK_IMPORT_FN__           │
 │  </script>                                                      │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -140,7 +141,7 @@ export const start: Builder['start'] = async ({
   // Get all story files
   const stories = await listStories(options);
 
-  // Create single context for all stories
+  // Create ESBuild context (single initialization)
   const ctx = await createEsbuildContext(stories, options);
 
   // Start ESBuild's built-in dev server
@@ -149,15 +150,12 @@ export const start: Builder['start'] = async ({
     port: 0, // Auto-select port
   });
 
-  // Proxy requests to ESBuild server
-  router.use('/esbuild-out', createProxy({
-    target: `http://${serveResult.host}:${serveResult.port}`,
-    changeOrigin: true,
-  }));
+  // ESBuild server URL for direct access from browser
+  const esbuildServerUrl = `http://${serveResult.host}:${serveResult.port}`;
 
-  // Serve iframe.html
+  // Serve iframe.html with ESBuild server URL and stories
   router.get('/iframe.html', (req, res) => {
-    const html = generateIframeHTML(options, stories);
+    const html = generateIframeHTML(options, stories, esbuildServerUrl);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.send(html);
   });
@@ -209,10 +207,9 @@ export async function createEsbuildContext(
   ]);
 
   const ctx = await esbuild.context({
-    // Entry points: all story files + virtual modules
+    // Entry points: all story files + virtual app module
     entryPoints: [
       'virtual:app',           // Main entry point
-      'virtual:stories',       // importFn generator
       ...stories,              // All .stories files
     ],
 
@@ -242,8 +239,8 @@ export async function createEsbuildContext(
 
     // Plugins
     plugins: [
-      // Virtual modules (virtual:app, virtual:stories)
-      virtualModulesPlugin(options, stories),
+      // Virtual modules (virtual:app only)
+      virtualModulesPlugin(options),
 
       // CSF processing (.stories files)
       csfPlugin(options),
@@ -289,8 +286,7 @@ import type { Plugin } from 'esbuild';
 import type { Options } from 'storybook/internal/types';
 
 export function virtualModulesPlugin(
-  options: Options,
-  stories: string[]
+  options: Options
 ): Plugin {
   return {
     name: 'storybook-virtual-modules',
@@ -311,18 +307,6 @@ export function virtualModulesPlugin(
             contents: code,
             loader: 'js',
             resolveDir: options.configDir,
-          };
-        }
-
-        // ===================================
-        // virtual:stories - importFn
-        // ===================================
-        if (args.path === 'virtual:stories') {
-          const code = generateImportFnCode(stories);
-          return {
-            contents: code,
-            loader: 'js',
-            resolveDir: process.cwd(),
           };
         }
 
@@ -360,7 +344,6 @@ async function generateAppEntryCode(options: Options): Promise<string> {
   return `
 import { setup } from 'storybook/internal/preview/runtime';
 import { composeConfigs, PreviewWeb } from 'storybook/preview-api';
-import { importFn } from 'virtual:stories';
 
 // Setup runtime
 setup();
@@ -373,48 +356,14 @@ const getProjectAnnotations = () => {
   return composeConfigs([${configs}]);
 };
 
-// Initialize PreviewWeb
+// Initialize PreviewWeb with importFn from window
+// (importFn is defined in iframe.html)
 window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
-  importFn,
+  window.__STORYBOOK_IMPORT_FN__,
   getProjectAnnotations
 );
 
 window.__STORYBOOK_STORY_STORE__ = window.__STORYBOOK_STORY_STORE__ || window.__STORYBOOK_PREVIEW__.storyStore;
-
-// HMR Support (optional, depends on implementation)
-if (import.meta.hot) {
-  import.meta.hot.accept('virtual:stories', (newModule) => {
-    window.__STORYBOOK_PREVIEW__.onStoriesChanged({
-      importFn: newModule.importFn
-    });
-  });
-}
-  `.trim();
-}
-
-// Generate importFn
-function generateImportFnCode(stories: string[]): string {
-  const importMap = stories.map(story => {
-    // Normalize path for use as key
-    const key = story.startsWith('./') ? story : `./${story}`;
-    return `  '${key}': () => import('${story}')`;
-  }).join(',\n');
-
-  return `
-// Auto-generated importFn for Storybook stories
-const importers = {
-${importMap}
-};
-
-export async function importFn(path) {
-  const importer = importers[path];
-
-  if (!importer) {
-    throw new Error(\`Story not found: \${path}. Available stories: \${Object.keys(importers).join(', ')}\`);
-  }
-
-  return await importer();
-}
   `.trim();
 }
 ```
@@ -428,9 +377,18 @@ import type { Options } from 'storybook/internal/types';
 
 export function generateIframeHTML(
   options: Options,
-  stories: string[]
+  stories: string[],
+  esbuildServerUrl: string
 ): string {
-  const { configType, port } = options;
+  const { configType } = options;
+
+  // Generate importFn code with story imports
+  const importMap = stories.map(story => {
+    // Normalize path for use as key
+    const key = story.startsWith('./') ? story : `./${story}`;
+    // Import directly from ESBuild server
+    return `    '${key}': () => import('${esbuildServerUrl}/${story}')`;
+  }).join(',\n');
 
   return `
 <!DOCTYPE html>
@@ -465,6 +423,24 @@ export function generateIframeHTML(
     // Compatibility
     window.module = undefined;
     window.global = window;
+
+    // Initialize importFn directly in iframe
+    // This avoids circular dependency in ESBuild context initialization
+    window.__STORYBOOK_IMPORT_FN__ = (function() {
+      const importers = {
+${importMap}
+      };
+
+      return async function importFn(path) {
+        const importer = importers[path];
+
+        if (!importer) {
+          throw new Error('Story not found: ' + path + '. Available stories: ' + Object.keys(importers).join(', '));
+        }
+
+        return await importer();
+      };
+    })();
   </script>
 </head>
 <body>
@@ -472,7 +448,7 @@ export function generateIframeHTML(
   <div id="storybook-docs"></div>
 
   <!-- Main Entry Point -->
-  <script type="module" src="/esbuild-out/virtual:app"></script>
+  <script type="module" src="http://${esbuildServerUrl}/virtual:app"></script>
 </body>
 </html>
   `.trim();
@@ -656,33 +632,30 @@ export async function listStories(options: Options): Promise<string[]> {
    │
    ↓
 7. importFn executes dynamic import:
-   return await import('/esbuild-out/src/Button.stories.js')
+   return await import('http://localhost:XXXX/src/Button.stories.js')
    │
    ↓
-8. Browser makes HTTP request:
-   GET http://localhost:6006/esbuild-out/src/Button.stories.js
+8. Browser makes HTTP request directly to ESBuild server:
+   GET http://localhost:XXXX/src/Button.stories.js
    │
    ↓
-9. Express router proxies request to ESBuild dev server
-   │
-   ↓
-10. ESBuild returns compiled ESM module:
+9. ESBuild returns compiled ESM module:
     - Includes all dependencies (via bundle: true)
     - Uses code splitting for common chunks
     - Applies source maps
    │
    ↓
-11. Browser executes module and returns exports:
+10. Browser executes module and returns exports:
     {
       default: { title: "Button", component: Button },
       Primary: { args: { variant: "primary" } }
     }
    │
    ↓
-12. StoryStore processes CSF and creates PreparedStory
+11. StoryStore processes CSF and creates PreparedStory
    │
    ↓
-13. PreviewWeb renders story via framework renderer
+12. PreviewWeb renders story via framework renderer
 ```
 
 ---
@@ -709,13 +682,14 @@ export async function buildProduction(options: Options) {
     metafile: true,
 
     plugins: [
-      virtualModulesPlugin(options, stories),
+      virtualModulesPlugin(options),
       csfPlugin(options),
     ],
   });
 
-  // Copy iframe.html
-  const html = generateIframeHTML(options, stories);
+  // Copy iframe.html (for production, use relative paths)
+  const esbuildServerUrl = '.'; // Relative path for production build
+  const html = generateIframeHTML(options, stories, esbuildServerUrl);
   await fs.writeFile(
     join(options.outputDir, 'iframe.html'),
     html
