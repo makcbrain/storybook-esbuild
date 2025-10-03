@@ -43,6 +43,23 @@ const importFn = async (path) => {
 - Automatic dependency resolution
 - Standard browser cache works out of the box
 
+### 4. Global Externals for Storybook Runtime
+
+Storybook runtime modules are **not bundled** but accessed via **global variables**:
+
+- `globalsNameReferenceMap` from `storybook/internal/preview/globals` provides mapping:
+  - `'storybook/preview-api'` → `window.__STORYBOOK_MODULE_PREVIEW_API__`
+  - `'@storybook/global'` → `window.__STORYBOOK_MODULE_GLOBAL__`
+  - etc.
+
+- Plugin `@fal-works/esbuild-plugin-global-externals` replaces imports with global references
+
+**Benefits:**
+- No duplicate runtime code in bundles
+- Storybook runtime loaded once in iframe.html
+- Smaller bundle sizes
+- Faster compilation
+
 ---
 
 ## System Architecture
@@ -185,6 +202,8 @@ export const build: Builder['build'] = async ({ options }) => {
 
 ```typescript
 import * as esbuild from 'esbuild';
+import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
+import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
 
 export async function createEsbuildContext(
@@ -239,6 +258,10 @@ export async function createEsbuildContext(
 
     // Plugins
     plugins: [
+      // Replace Storybook runtime imports with global variables
+      // This maps imports like 'storybook/preview-api' to window.__STORYBOOK_MODULE_PREVIEW_API__
+      globalExternals(globalsNameReferenceMap),
+
       // Virtual modules (virtual:app only)
       virtualModulesPlugin(options),
 
@@ -247,14 +270,6 @@ export async function createEsbuildContext(
 
       // Framework-specific plugins (React, Vue, etc.)
       ...(await getFrameworkPlugins(options)),
-    ],
-
-    // External dependencies (don't bundle)
-    external: [
-      // Storybook runtime must be globally available
-      'storybook/preview-api',
-      'storybook/internal/*',
-      '@storybook/global',
     ],
 
     // Loader config
@@ -737,34 +752,7 @@ export async function buildProduction(options: Options) {
 
 ## Potential Issues and Solutions
 
-### Issue 1: External Dependencies
-
-**Problem**: `storybook/preview-api` must be available in iframe but marked as `external` in ESBuild.
-
-**Solution**:
-
-```typescript
-// Add importmap in iframe.html
-<script type="importmap">
-{
-  "imports": {
-    "storybook/preview-api": "/node_modules/storybook/preview-api/dist/index.js",
-    "storybook/internal/": "/node_modules/storybook/internal/"
-  }
-}
-</script>
-```
-
-Or bundle via separate entry point:
-
-```typescript
-entryPoints: {
-  'runtime': 'storybook/preview-api',
-  ...stories
-}
-```
-
-### Issue 2: Code Splitting and Dynamic Imports
+### Issue 1: Code Splitting and Dynamic Imports
 
 **Problem**: ESBuild creates chunks with names like `chunk-ABC123.js` that need proper resolution.
 
@@ -777,7 +765,7 @@ esbuild.context({
 })
 ```
 
-### Issue 3: MDX Files
+### Issue 2: MDX Files
 
 **Problem**: `.mdx` files require special processing.
 
@@ -793,7 +781,7 @@ plugins: [
 ]
 ```
 
-### Issue 4: CSS Modules / PostCSS
+### Issue 3: CSS Modules / PostCSS
 
 **Problem**: ESBuild doesn't support CSS Modules out of the box.
 
