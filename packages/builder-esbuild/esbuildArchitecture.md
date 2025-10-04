@@ -413,17 +413,6 @@ export function generateIframeHTML(
   <title>Storybook Preview</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Storybook Fonts -->
-  <style>
-    @font-face {
-      font-family: 'Nunito Sans';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url('./sb-common-assets/nunito-sans-regular.woff2') format('woff2');
-    }
-  </style>
-
   <!-- Global Config (pass to window) -->
   <script>
     window.CONFIG_TYPE = '${configType}';
