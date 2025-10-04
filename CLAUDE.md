@@ -55,3 +55,7 @@ The project uses modern TypeScript with strict settings:
 - Follow the existing code patterns and architecture
 - Maintain TypeScript strict mode compliance
 - Use Bun for all package management and runtime operations
+- Use camelCase for file names and variables
+- Use the English language for code
+- Extract functions into separate files for better modularity and reusability
+- Avoid using type assertions (as) in TypeScript where possible; prefer proper typing with generics or type annotations 

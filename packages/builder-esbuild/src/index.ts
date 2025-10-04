@@ -1,9 +1,9 @@
 import type { BuildContext } from 'esbuild';
 
 import type { EsbuildBuilder } from './types.ts';
-import { createEsbuildContext } from './utils/esbuild-context.js';
-import { generateIframeHTML } from './utils/generate-iframe.js';
-import { listStories } from './utils/list-stories.js';
+import { createEsbuildContext } from './utils/createEsbuildContext.js';
+import { generateIframeHtml } from './utils/generateIframeHtml.js';
+import { listStories } from './utils/listStories.js';
 
 export type * from './types.ts';
 
@@ -35,7 +35,7 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 
 	// Serve iframe.html with ESBuild server URL and stories
 	router.get('/iframe.html', async (_req, res) => {
-		const html = await generateIframeHTML(options, stories, esbuildServerUrl);
+		const html = await generateIframeHtml(options, stories, esbuildServerUrl);
 		res.setHeader('Content-Type', 'text/html; charset=utf-8');
 		res.statusCode = 200;
 		res.write(html);

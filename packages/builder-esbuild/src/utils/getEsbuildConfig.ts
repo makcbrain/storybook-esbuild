@@ -1,32 +1,26 @@
 import { join } from 'node:path';
 import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
-import * as esbuild from 'esbuild';
+import type { BuildOptions } from 'esbuild';
 import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
 
-import { csfPlugin } from '../plugins/csf-plugin.js';
-import { virtualModulesPlugin } from '../plugins/virtual-modules.js';
+import { csfPlugin } from '../plugins/csfPlugin.js';
+import { virtualModulesPlugin } from '../plugins/virtualModules.js';
 
 function stringifyEnvs(envs: Record<string, string>): Record<string, string> {
-	return Object.entries(envs).reduce(
-		(acc, [key, value]) => {
-			acc[`process.env.${key}`] = JSON.stringify(value);
-			return acc;
-		},
-		{} as Record<string, string>,
-	);
+	return Object.entries(envs).reduce<Record<string, string>>((acc, [key, value]) => {
+		acc[`process.env.${key}`] = JSON.stringify(value);
+		return acc;
+	}, {});
 }
 
-export async function createEsbuildContext(
-	stories: string[],
-	options: Options,
-): Promise<esbuild.BuildContext> {
+export async function getEsbuildConfig(stories: string[], options: Options): Promise<BuildOptions> {
 	const { presets } = options;
 
 	// Get settings from presets
 	const envs = await presets.apply<Record<string, string>>('env');
 
-	const ctx = await esbuild.context({
+	const config: BuildOptions = {
 		// Entry points: all story files + virtual app module
 		entryPoints: [
 			'virtual:app.js', // Main entry point
@@ -87,7 +81,7 @@ export async function createEsbuildContext(
 
 		// Watch mode (automatic)
 		// ESBuild context includes incremental + watch
-	});
+	};
 
-	return ctx;
+	return presets.apply('esbuildFinal', config, options);
 }

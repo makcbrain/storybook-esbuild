@@ -1,7 +1,7 @@
 import { normalizeStories } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
-export async function generateIframeHTML(
+export async function generateIframeHtml(
 	options: Options,
 	stories: string[],
 	esbuildServerUrl: string,
