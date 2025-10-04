@@ -27,6 +27,7 @@
 	},
 	"dependencies": {
 		"@fal-works/esbuild-plugin-global-externals": "2.1.2",
+		"dedent": "1.7.0",
 		"slash": "5.1.0"
 	}
 }

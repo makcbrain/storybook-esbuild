@@ -58,4 +58,5 @@ The project uses modern TypeScript with strict settings:
 - Use camelCase for file names and variables
 - Use the English language for code
 - Extract functions into separate files for better modularity and reusability
-- Avoid using type assertions (as) in TypeScript where possible; prefer proper typing with generics or type annotations 
+- Avoid using type assertions (as) in TypeScript where possible; prefer proper typing with generics or type annotations
+- Prefer arrow functions over function syntax

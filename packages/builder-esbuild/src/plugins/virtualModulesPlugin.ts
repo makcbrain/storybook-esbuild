@@ -1,3 +1,4 @@
+import dedent from 'dedent';
 import type { Plugin } from 'esbuild';
 import { loadPreviewOrConfigFile } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
@@ -50,24 +51,24 @@ async function generateAppEntryCode(options: Options): Promise<string> {
 
 	const configs = previewAnnotations.map((_, index) => `previewAnnotation${index}`).join(', ');
 
-	return `
-import { composeConfigs, PreviewWeb } from 'storybook/preview-api';
+	return dedent`
+		import { composeConfigs, PreviewWeb } from 'storybook/preview-api';
 
-// Import preview annotations
-${imports}
+		// Import preview annotations
+		${imports}
 
-// Compose configs
-const getProjectAnnotations = () => {
-  return composeConfigs([${configs}]);
-};
+		// Compose configs
+		const getProjectAnnotations = () => {
+		  return composeConfigs([${configs}]);
+		};
 
-// Initialize PreviewWeb with importFn from window
-// (importFn is defined in iframe.html)
-window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
-  window.__STORYBOOK_IMPORT_FN__,
-  getProjectAnnotations
-);
+		// Initialize PreviewWeb with importFn from window
+		// (importFn is defined in iframe.html)
+		window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
+		  window.__STORYBOOK_IMPORT_FN__,
+		  getProjectAnnotations
+		);
 
-window.__STORYBOOK_STORY_STORE__ = window.__STORYBOOK_STORY_STORE__ || window.__STORYBOOK_PREVIEW__.storyStore;
-  `.trim();
+		window.__STORYBOOK_STORY_STORE__ = window.__STORYBOOK_STORY_STORE__ || window.__STORYBOOK_PREVIEW__.storyStore;
+	`;
 }

@@ -1,3 +1,4 @@
+import dedent from 'dedent';
 import { normalizeStories } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
@@ -58,59 +59,59 @@ export async function generateIframeHtml(
 		})
 		.join(',\n');
 
-	return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Storybook</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+	return dedent`
+		<!DOCTYPE html>
+		<html lang="en">
+		<head>
+		  <meta charset="utf-8" />
+		  <title>Storybook</title>
+		  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Global Config (pass to window) -->
-  <script>
-    window.CONFIG_TYPE = '${configType || ''}';
-    window.LOGLEVEL = '${logLevel || ''}';
-    window.FRAMEWORK_OPTIONS = ${JSON.stringify(frameworkOptions)};
-    window.CHANNEL_OPTIONS = ${JSON.stringify(coreOptions?.channelOptions || {})};
-    window.FEATURES = ${JSON.stringify(features || {})};
-    window.STORIES = ${JSON.stringify(normalizedStories || {})};
-    window.DOCS_OPTIONS = ${JSON.stringify(docsOptions || {})};
-    window.TAGS_OPTIONS = ${JSON.stringify(tagsOptions || {})};
+		  <!-- Global Config (pass to window) -->
+		  <script>
+		    window.CONFIG_TYPE = '${configType || ''}';
+		    window.LOGLEVEL = '${logLevel || ''}';
+		    window.FRAMEWORK_OPTIONS = ${JSON.stringify(frameworkOptions)};
+		    window.CHANNEL_OPTIONS = ${JSON.stringify(coreOptions?.channelOptions || {})};
+		    window.FEATURES = ${JSON.stringify(features || {})};
+		    window.STORIES = ${JSON.stringify(normalizedStories || {})};
+		    window.DOCS_OPTIONS = ${JSON.stringify(docsOptions || {})};
+		    window.TAGS_OPTIONS = ${JSON.stringify(tagsOptions || {})};
 
-    ${otherGlobalsCode || ''}
+		    ${otherGlobalsCode || ''}
 
-    // Compatibility
-    window.module = undefined;
-    window.global = window;
+		    // Compatibility
+		    window.module = undefined;
+		    window.global = window;
 
-    // Initialize importFn directly in iframe
-    // This avoids circular dependency in ESBuild context initialization
-    window.__STORYBOOK_IMPORT_FN__ = (function() {
-      const importers = {
-${importMap}
-      };
+		    // Initialize importFn directly in iframe
+		    // This avoids circular dependency in ESBuild context initialization
+		    window.__STORYBOOK_IMPORT_FN__ = (function() {
+		      const importers = {
+		        ${importMap}
+		      };
 
-      return async function importFn(path) {
-        const importer = importers[path];
+		      return async function importFn(path) {
+		        const importer = importers[path];
 
-        if (!importer) {
-          throw new Error('Story not found: ' + path + '. Available stories: ' + Object.keys(importers).join(', '));
-        }
+		        if (!importer) {
+		          throw new Error('Story not found: ' + path + '. Available stories: ' + Object.keys(importers).join(', '));
+		        }
 
-        return await importer();
-      };
-    })();
-  </script>
-  ${headHtmlSnippet || ''}
-</head>
-<body>
-  ${bodyHtmlSnippet || ''}
-  <div id="storybook-root"></div>
-  <div id="storybook-docs"></div>
+		        return await importer();
+		      };
+		    })();
+		  </script>
+		  ${headHtmlSnippet || ''}
+		</head>
+		<body>
+		  ${bodyHtmlSnippet || ''}
+		  <div id="storybook-root"></div>
+		  <div id="storybook-docs"></div>
 
-  <!-- Main Entry Point -->
-  <script type="module" src="${esbuildServerUrl}/virtual:app.js"></script>
-</body>
-</html>
-  `.trim();
+		  <!-- Main Entry Point -->
+		  <script type="module" src="${esbuildServerUrl}/virtual:app.js"></script>
+		</body>
+		</html>
+	`;
 }

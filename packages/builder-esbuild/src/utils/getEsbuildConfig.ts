@@ -5,7 +5,7 @@ import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
 
 import { csfPlugin } from '../plugins/csfPlugin.js';
-import { virtualModulesPlugin } from '../plugins/virtualModules.js';
+import { virtualModulesPlugin } from '../plugins/virtualModulesPlugin.js';
 
 function stringifyEnvs(envs: Record<string, string>): Record<string, string> {
 	return Object.entries(envs).reduce<Record<string, string>>((acc, [key, value]) => {
