@@ -304,7 +304,7 @@ export function virtualModulesPlugin(
   options: Options
 ): Plugin {
   return {
-    name: 'storybook-virtual-modules',
+    name: 'virtual-modules',
 
     setup(build) {
       // ===================================
@@ -312,10 +312,10 @@ export function virtualModulesPlugin(
       // ===================================
       build.onResolve({ filter: /^virtual:app.js$/ }, () => ({
         path: 'virtual:app.js',
-        namespace: 'storybook-virtual',
+        namespace: 'virtual',
       }));
 
-      build.onLoad({ filter: /.*/, namespace: 'storybook-virtual' }, async (args) => {
+      build.onLoad({ filter: /.*/, namespace: 'virtual' }, async (args) => {
         if (args.path === 'virtual:app.js') {
           const code = await generateAppEntryCode(options);
           return {
