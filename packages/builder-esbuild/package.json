@@ -24,5 +24,9 @@
 	},
 	"scripts": {
 		"build": "rm -rf dist && bunx tsc"
+	},
+	"dependencies": {
+		"@fal-works/esbuild-plugin-global-externals": "2.1.2",
+		"slash": "5.1.0"
 	}
 }

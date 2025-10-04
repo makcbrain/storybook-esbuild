@@ -1,37 +1,11 @@
-import { readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import {
-	type BuildContext,
-	type BuildOptions,
-	build as esbuildBuild,
-	context as esbuildContext,
-} from 'esbuild';
-import type { Middleware, Options } from 'storybook/internal/types';
+import type { BuildContext } from 'esbuild';
 
-import packageJson from '../package.json' with { type: 'json' };
-import { transformIframeHtml } from './transform-iframe-html.js';
 import type { EsbuildBuilder } from './types.ts';
+import { createEsbuildContext } from './utils/esbuild-context.js';
+import { generateIframeHTML } from './utils/generate-iframe.js';
+import { listStories } from './utils/list-stories.js';
 
 export type * from './types.ts';
-
-const iframeHandler = (options: Options): Middleware => {
-	return async (_req, res) => {
-		console.log('=== iframeHandler');
-		let iframeHtml = await readFile(
-			fileURLToPath(import.meta.resolve(`${packageJson.name}/assets/iframe.html`)),
-			{
-				encoding: 'utf8',
-			},
-		);
-
-		iframeHtml = await transformIframeHtml(iframeHtml, options);
-
-		res.setHeader('Content-Type', 'text/html');
-		res.statusCode = 200;
-		res.write(iframeHtml);
-		res.end();
-	};
-};
 
 let ctx: BuildContext;
 
@@ -41,24 +15,39 @@ export const bail = async (): Promise<void> => {
 
 export const start: EsbuildBuilder['start'] = async (params) => {
 	const { startTime, options, router } = params;
-	const { presets } = options;
 
-	const config: BuildOptions = {
-		target: 'esnext',
-	};
+	// Get all story files
+	const stories = await listStories(options);
 
-	const finalConfig = await presets.apply('esbuildFinal', config, options);
+	// Create ESBuild context (single initialization)
+	ctx = await createEsbuildContext(stories, options);
 
-	ctx = await esbuildContext(finalConfig);
+	// Start ESBuild's built-in dev server
+	const serveResult = await ctx.serve({
+		servedir: '.storybook/esbuild-out',
+		port: 0, // Auto-select port
+	});
 
-	router.get('/iframe.html', iframeHandler(options));
+	// ESBuild server URL for direct access from browser
+	const esbuildServerUrl = `http://localhost:${serveResult.port}`;
+
+	console.log(`[ESBuild Builder] Dev server started at ${esbuildServerUrl}`);
+
+	// Serve iframe.html with ESBuild server URL and stories
+	router.get('/iframe.html', async (_req, res) => {
+		const html = await generateIframeHTML(options, stories, esbuildServerUrl);
+		res.setHeader('Content-Type', 'text/html; charset=utf-8');
+		res.statusCode = 200;
+		res.write(html);
+		res.end();
+	});
 
 	return {
 		bail,
 		stats: {
 			toJson: () => {
 				return {
-					message: 'no stats',
+					message: 'ESBuild stats',
 				};
 			},
 		},
@@ -66,6 +55,7 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 	};
 };
 
-export const build: EsbuildBuilder['build'] = async ({ options }) => {
-	await esbuildBuild(options);
+export const build: EsbuildBuilder['build'] = async () => {
+	// TODO: Implement production build
+	console.log('[ESBuild Builder] Production build not yet implemented');
 };
