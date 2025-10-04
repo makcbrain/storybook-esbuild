@@ -9,15 +9,15 @@ export function virtualModulesPlugin(options: Options): Plugin {
 
 		setup(build) {
 			// ===================================
-			// virtual:app.js - main entry point
+			// virtualApp.js - main entry point
 			// ===================================
-			build.onResolve({ filter: /^virtual:app\.js$/ }, () => ({
-				path: 'virtual:app.js',
+			build.onResolve({ filter: /^virtualApp\.js$/ }, () => ({
+				path: 'virtualApp.js',
 				namespace: 'virtual',
 			}));
 
 			build.onLoad({ filter: /.*/, namespace: 'virtual' }, async (args) => {
-				if (args.path === 'virtual:app.js') {
+				if (args.path === 'virtualApp.js') {
 					const code = await generateAppEntryCode(options);
 					return {
 						contents: code,

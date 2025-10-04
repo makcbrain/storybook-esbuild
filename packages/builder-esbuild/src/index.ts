@@ -26,6 +26,9 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 	const serveResult = await ctx.serve({
 		servedir: '.storybook/esbuild-out',
 		port: 0, // Auto-select port
+		cors: {
+			origin: '*',
+		},
 	});
 
 	// ESBuild server URL for direct access from browser

@@ -110,7 +110,7 @@ export async function generateIframeHtml(
 		  <div id="storybook-docs"></div>
 
 		  <!-- Main Entry Point -->
-		  <script type="module" src="${esbuildServerUrl}/virtual:app.js"></script>
+		  <script type="module" src="${esbuildServerUrl}/virtualApp.js"></script>
 		</body>
 		</html>
 	`;

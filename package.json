@@ -27,6 +27,7 @@
 		"test": "bun test --no-fail-fast",
 		"storybook": "bunx storybook dev -p 6006",
 		"build-storybook": "storybook tools",
+		"tsl": "bun run build && bun run storybook",
 		"precommit": "bun run lint && git add . && bun run typecheck && bun run test",
 		"prepare": "husky"
 	}

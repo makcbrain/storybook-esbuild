@@ -133,8 +133,8 @@ Storybook runtime modules are **not bundled** but accessed via **global variable
 │    })();                                                           │
 │  </script>                                                         │
 │                                                                    │
-│  <script type="module" src="http://localhost:XXXX/virtual:app.js"> │
-│    // virtual:app.js uses window.__STORYBOOK_IMPORT_FN__           │
+│  <script type="module" src="http://localhost:XXXX/virtualApp.js">  │
+│    // virtualApp.js uses window.__STORYBOOK_IMPORT_FN__            │
 │  </script>                                                         │
 └────────────────────────────────────────────────────────────────────┘
 ```
@@ -228,7 +228,7 @@ export async function createEsbuildContext(
   const ctx = await esbuild.context({
     // Entry points: all story files + virtual app module
     entryPoints: [
-      'virtual:app.js',           // Main entry point
+      'virtualApp.js',           // Main entry point
       ...stories,              // All .stories files
     ],
 
@@ -261,8 +261,7 @@ export async function createEsbuildContext(
       // Replace Storybook runtime imports with global variables
       // This maps imports like 'storybook/preview-api' to window.__STORYBOOK_MODULE_PREVIEW_API__
       globalExternals(globalsNameReferenceMap),
-
-      // Virtual modules (virtual:app.js only)
+        
       virtualModulesPlugin(options),
 
       // CSF processing (.stories files)
@@ -308,15 +307,15 @@ export function virtualModulesPlugin(
 
     setup(build) {
       // ===================================
-      // virtual:app.js - main entry point
+      // virtualApp.js - main entry point
       // ===================================
-      build.onResolve({ filter: /^virtual:app.js$/ }, () => ({
-        path: 'virtual:app.js',
+      build.onResolve({ filter: /^virtualApp.js$/ }, () => ({
+        path: 'virtualApp.js',
         namespace: 'virtual',
       }));
 
       build.onLoad({ filter: /.*/, namespace: 'virtual' }, async (args) => {
-        if (args.path === 'virtual:app.js') {
+        if (args.path === 'virtualApp.js') {
           const code = await generateAppEntryCode(options);
           return {
             contents: code,
@@ -499,7 +498,7 @@ ${importMap}
   <div id="storybook-docs"></div>
 
   <!-- Main Entry Point -->
-  <script type="module" src="${esbuildServerUrl}/virtual:app.js"></script>
+  <script type="module" src="${esbuildServerUrl}/virtualApp.js"></script>
 </body>
 </html>
   `.trim();
@@ -721,7 +720,7 @@ export async function buildProduction(options: Options) {
 
   const result = await esbuild.build({
     entryPoints: [
-      'virtual:app.js',
+      'virtualApp.js',
       ...stories,
     ],
     outdir: options.outputDir,
