@@ -3,6 +3,8 @@ import type { Plugin } from 'esbuild';
 import { loadPreviewOrConfigFile } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
+import { listStories } from '../utils/listStories.js';
+
 export const virtualModulesPlugin = (options: Options): Plugin => {
 	return {
 		name: 'virtual-modules',
@@ -36,6 +38,8 @@ export const virtualModulesPlugin = (options: Options): Plugin => {
 const generateAppEntryCode = async (options: Options): Promise<string> => {
 	const { presets, configDir } = options;
 
+	const stories = await listStories(options);
+
 	// Get preview annotations (.storybook/preview.ts + addons)
 	const previewAnnotations = await presets.apply<string[]>('previewAnnotations', [], options);
 
@@ -51,7 +55,19 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 
 	const configs = previewAnnotations.map((_, index) => `previewAnnotation${index}`).join(', ');
 
+	// Generate importMap for stories
+	const importMap = stories
+		.map((story) => {
+			const key = story.startsWith('./') ? story : `./${story}`;
+			return `'${key}': () => import('./${story}')`;
+		})
+		.join(',\n    ');
+
 	return dedent`
+	    import { setup } from 'storybook/internal/preview/runtime';
+
+        setup();
+
 		import { composeConfigs, PreviewWeb } from 'storybook/preview-api';
 
 		// Import preview annotations
@@ -61,6 +77,22 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 		const getProjectAnnotations = () => {
 		  return composeConfigs([${configs}]);
 		};
+
+		window.__STORYBOOK_IMPORT_FN__ = (function() {
+		  const importers = {
+		    ${importMap}
+		  };
+
+		  return async function importFn(path) {
+		    const importer = importers[path];
+
+		    if (!importer) {
+		      throw new Error('Story not found: ' + path + '. Available stories: ' + Object.keys(importers).join(', '));
+		    }
+
+		    return await importer();
+		  };
+		})();
 
 		// Initialize PreviewWeb with importFn from window
 		// (importFn is defined in iframe.html)

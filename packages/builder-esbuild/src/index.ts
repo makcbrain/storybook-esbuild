@@ -36,9 +36,9 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 
 	console.log(`[ESBuild Builder] Dev server started at ${esbuildServerUrl}`);
 
-	// Serve iframe.html with ESBuild server URL and stories
+	// Serve iframe.html with ESBuild server URL
 	router.get('/iframe.html', async (_req, res) => {
-		const html = await generateIframeHtml(options, stories, esbuildServerUrl);
+		const html = await generateIframeHtml(options, esbuildServerUrl);
 		res.setHeader('Content-Type', 'text/html; charset=utf-8');
 		res.statusCode = 200;
 		res.write(html);

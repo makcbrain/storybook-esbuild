@@ -4,7 +4,6 @@ import type { Options } from 'storybook/internal/types';
 
 export const generateIframeHtml = async (
 	options: Options,
-	stories: string[],
 	esbuildServerUrl: string,
 ): Promise<string> => {
 	const { configType, features, presets } = options;
@@ -49,16 +48,6 @@ export const generateIframeHtml = async (
 		.map(([k, v]) => `window["${k}"] = ${JSON.stringify(v)};`)
 		.join('\n    ');
 
-	// Generate importFn code with story imports
-	const importMap = stories
-		.map((story) => {
-			// Normalize path for use as key
-			const key = story.startsWith('./') ? story : `./${story}`;
-			// Import directly from ESBuild server
-			return `    '${key}': () => import('${esbuildServerUrl}/${story}')`;
-		})
-		.join(',\n');
-
 	return dedent`
 		<!DOCTYPE html>
 		<html lang="en">
@@ -83,24 +72,6 @@ export const generateIframeHtml = async (
 		    // Compatibility
 		    window.module = undefined;
 		    window.global = window;
-
-		    // Initialize importFn directly in iframe
-		    // This avoids circular dependency in ESBuild context initialization
-		    window.__STORYBOOK_IMPORT_FN__ = (function() {
-		      const importers = {
-		        ${importMap}
-		      };
-
-		      return async function importFn(path) {
-		        const importer = importers[path];
-
-		        if (!importer) {
-		          throw new Error('Story not found: ' + path + '. Available stories: ' + Object.keys(importers).join(', '));
-		        }
-
-		        return await importer();
-		      };
-		    })();
 		  </script>
 		  ${headHtmlSnippet || ''}
 		</head>
