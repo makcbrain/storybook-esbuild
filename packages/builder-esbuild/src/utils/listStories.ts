@@ -1,9 +1,12 @@
-import { isAbsolute, join } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { glob } from 'glob';
 import slash from 'slash';
 import { commonGlobOptions, normalizeStories } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
+/**
+ * Returns absolute paths to stories
+ */
 export const listStories = async (options: Options): Promise<string[]> => {
 	const storiesGlobs = await options.presets.apply('stories', [], options);
 
@@ -15,8 +18,10 @@ export const listStories = async (options: Options): Promise<string[]> => {
 	const storyFiles = (
 		await Promise.all(
 			normalizedStories.map(async ({ directory, files }) => {
-				const pattern = join(directory, files);
-				const absolutePattern = isAbsolute(pattern) ? pattern : join(options.configDir, pattern);
+				const absoluteDirectory = isAbsolute(directory)
+					? directory
+					: resolve(process.cwd(), directory);
+				const absolutePattern = join(absoluteDirectory, files);
 
 				return glob(slash(absolutePattern), {
 					...commonGlobOptions(absolutePattern),

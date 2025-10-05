@@ -1,5 +1,6 @@
 import dedent from 'dedent';
 import type { Plugin } from 'esbuild';
+import path from 'path';
 import { loadPreviewOrConfigFile } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
@@ -58,8 +59,9 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 	// Generate importMap for stories
 	const importMap = stories
 		.map((story) => {
-			const key = story.startsWith('./') ? story : `./${story}`;
-			return `'${key}': () => import('./${story}')`;
+			const relative = path.relative(process.cwd(), story);
+			const key = story.startsWith('./') ? relative : `./${relative}`;
+			return `'${key}': () => import('${story}')`;
 		})
 		.join(',\n    ');
 
