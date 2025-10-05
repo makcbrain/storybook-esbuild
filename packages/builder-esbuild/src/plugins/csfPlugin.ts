@@ -1,3 +1,4 @@
+import dedent from 'dedent';
 import type { Plugin } from 'esbuild';
 
 /**
@@ -5,7 +6,7 @@ import type { Plugin } from 'esbuild';
  * - Adds export order metadata
  * - Processes CSF format
  */
-export function csfPlugin(): Plugin {
+export const csfPlugin = (): Plugin => {
 	return {
 		name: 'storybook-csf',
 
@@ -28,9 +29,9 @@ export function csfPlugin(): Plugin {
 			});
 		},
 	};
-}
+};
 
-function injectExportOrder(code: string): string {
+const injectExportOrder = (code: string): string => {
 	// Parse exports and add __namedExportsOrder
 	// This is needed for proper story ordering
 
@@ -43,15 +44,15 @@ function injectExportOrder(code: string): string {
 		return code;
 	}
 
-	return `
-${code}
+	return dedent`
+		${code}
 
-// Auto-injected by @storybook/builder-esbuild
-export const __namedExportsOrder = ${JSON.stringify(exports)};
-  `.trim();
-}
+		// Auto-injected by @storybook/builder-esbuild
+		export const __namedExportsOrder = ${JSON.stringify(exports)};
+	`;
+};
 
-function getLoaderForFile(path: string): 'ts' | 'tsx' | 'js' | 'jsx' {
+const getLoaderForFile = (path: string): 'ts' | 'tsx' | 'js' | 'jsx' => {
 	if (path.endsWith('.tsx')) {
 		return 'tsx';
 	}
@@ -62,4 +63,4 @@ function getLoaderForFile(path: string): 'ts' | 'tsx' | 'js' | 'jsx' {
 		return 'jsx';
 	}
 	return 'js';
-}
+};

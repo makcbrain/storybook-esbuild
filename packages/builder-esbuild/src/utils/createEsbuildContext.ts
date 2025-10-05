@@ -3,11 +3,11 @@ import type { Options } from 'storybook/internal/types';
 
 import { getEsbuildConfig } from './getEsbuildConfig.js';
 
-export async function createEsbuildContext(
+export const createEsbuildContext = async (
 	stories: string[],
 	options: Options,
-): Promise<esbuild.BuildContext> {
+): Promise<esbuild.BuildContext> => {
 	const config = await getEsbuildConfig(stories, options);
 
 	return esbuild.context(config);
-}
+};

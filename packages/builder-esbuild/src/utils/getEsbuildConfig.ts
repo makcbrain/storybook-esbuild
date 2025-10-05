@@ -8,14 +8,17 @@ import { csfPlugin } from '../plugins/csfPlugin.js';
 import { virtualModulesPlugin } from '../plugins/virtualModulesPlugin.js';
 import { getGlobalExternalsMapping } from './getGlobalExternalsMapping.js';
 
-function stringifyEnvs(envs: Record<string, string>): Record<string, string> {
+const stringifyEnvs = (envs: Record<string, string>): Record<string, string> => {
 	return Object.entries(envs).reduce<Record<string, string>>((acc, [key, value]) => {
 		acc[`process.env.${key}`] = JSON.stringify(value);
 		return acc;
 	}, {});
-}
+};
 
-export async function getEsbuildConfig(stories: string[], options: Options): Promise<BuildOptions> {
+export const getEsbuildConfig = async (
+	stories: string[],
+	options: Options,
+): Promise<BuildOptions> => {
 	const { presets } = options;
 
 	// Get settings from presets
@@ -57,4 +60,4 @@ export async function getEsbuildConfig(stories: string[], options: Options): Pro
 	};
 
 	return presets.apply('esbuildFinal', config, options);
-}
+};

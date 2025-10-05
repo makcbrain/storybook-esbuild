@@ -4,7 +4,7 @@ import slash from 'slash';
 import { commonGlobOptions, normalizeStories } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
-export async function listStories(options: Options): Promise<string[]> {
+export const listStories = async (options: Options): Promise<string[]> => {
 	const storiesGlobs = await options.presets.apply('stories', [], options);
 
 	const normalizedStories = normalizeStories(storiesGlobs, {
@@ -29,4 +29,4 @@ export async function listStories(options: Options): Promise<string[]> {
 		.sort(); // Sort for deterministic builds
 
 	return storyFiles;
-}
+};

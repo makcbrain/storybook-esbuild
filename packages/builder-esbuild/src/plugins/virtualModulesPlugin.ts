@@ -3,7 +3,7 @@ import type { Plugin } from 'esbuild';
 import { loadPreviewOrConfigFile } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
-export function virtualModulesPlugin(options: Options): Plugin {
+export const virtualModulesPlugin = (options: Options): Plugin => {
 	return {
 		name: 'virtual-modules',
 
@@ -30,10 +30,10 @@ export function virtualModulesPlugin(options: Options): Plugin {
 			});
 		},
 	};
-}
+};
 
 // Generate main entry point
-async function generateAppEntryCode(options: Options): Promise<string> {
+const generateAppEntryCode = async (options: Options): Promise<string> => {
 	const { presets, configDir } = options;
 
 	// Get preview annotations (.storybook/preview.ts + addons)
@@ -71,4 +71,4 @@ async function generateAppEntryCode(options: Options): Promise<string> {
 
 		window.__STORYBOOK_STORY_STORE__ = window.__STORYBOOK_STORY_STORE__ || window.__STORYBOOK_PREVIEW__.storyStore;
 	`;
-}
+};

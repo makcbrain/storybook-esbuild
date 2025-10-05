@@ -2,11 +2,11 @@ import dedent from 'dedent';
 import { normalizeStories } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
-export async function generateIframeHtml(
+export const generateIframeHtml = async (
 	options: Options,
 	stories: string[],
 	esbuildServerUrl: string,
-): Promise<string> {
+): Promise<string> => {
 	const { configType, features, presets } = options;
 
 	// Get all required configuration from presets
@@ -114,4 +114,4 @@ export async function generateIframeHtml(
 		</body>
 		</html>
 	`;
-}
+};
