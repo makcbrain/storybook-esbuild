@@ -1,6 +1,6 @@
+import path from 'node:path';
 import dedent from 'dedent';
 import type { Plugin } from 'esbuild';
-import path from 'path';
 import { loadPreviewOrConfigFile } from 'storybook/internal/common';
 import type { Options } from 'storybook/internal/types';
 
