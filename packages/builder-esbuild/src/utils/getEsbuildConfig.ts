@@ -32,6 +32,7 @@ export const getEsbuildConfig = async (
 		outdir: join(options.configDir, 'esbuild-out'),
 		outbase: process.cwd(),
 		bundle: true,
+		splitting: true,
 		format: 'esm',
 		sourcemap: true,
 		target: ['esnext'],
