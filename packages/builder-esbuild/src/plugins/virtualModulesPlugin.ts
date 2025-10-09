@@ -70,6 +70,17 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 
         setup();
 
+        import { createBrowserChannel } from 'storybook/internal/channels';
+        import { addons } from 'storybook/preview-api';
+
+		const channel = createBrowserChannel({ page: 'preview' });
+		addons.setChannel(channel);
+		window.__STORYBOOK_ADDONS_CHANNEL__ = channel;
+
+		if (window.CONFIG_TYPE === 'DEVELOPMENT') {
+		  window.__STORYBOOK_SERVER_CHANNEL__ = channel;
+		}
+
 		import { composeConfigs, PreviewWeb } from 'storybook/preview-api';
 
 		// Import preview annotations
@@ -96,8 +107,7 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 		  };
 		})();
 
-		// Initialize PreviewWeb with importFn from window
-		// (importFn is defined in iframe.html)
+		// Initialize PreviewWeb
 		window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
 		  window.__STORYBOOK_IMPORT_FN__,
 		  getProjectAnnotations
