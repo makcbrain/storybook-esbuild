@@ -76,7 +76,6 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 					document.head.appendChild(link);
 				}
 
-				// Import the story module
 				return import('${story}');
 			}`;
 		})
