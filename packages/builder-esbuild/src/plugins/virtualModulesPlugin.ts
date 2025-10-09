@@ -56,12 +56,29 @@ const generateAppEntryCode = async (options: Options): Promise<string> => {
 
 	const configs = previewAnnotations.map((_, index) => `previewAnnotation${index}`).join(', ');
 
-	// Generate importMap for stories
+	// Generate importMap for stories with CSS loading
 	const importMap = stories
 		.map((story) => {
 			const relative = path.relative(process.cwd(), story);
 			const key = story.startsWith('./') ? relative : `./${relative}`;
-			return `'${key}': () => import('${story}')`;
+
+			// Get CSS file path by replacing story extension with .css
+			const cssPath = key.replace(/\.[jt]sx?$/, '.css');
+
+			return `'${key}': () => {
+				const cssUrl = new URL('${cssPath}', import.meta.url);
+
+				if (!document.querySelector('link[data-path="${cssPath}"]')) {
+					const link = document.createElement('link');
+					link.rel = 'stylesheet';
+					link.href = cssUrl.href;
+					link.setAttribute('data-path', '${cssPath}');
+					document.head.appendChild(link);
+				}
+
+				// Import the story module
+				return import('${story}');
+			}`;
 		})
 		.join(',\n    ');
 
