@@ -11,7 +11,7 @@ import type { StorybookConfig } from '@makcbrain/storybook-framework-react-esbui
 // }
 const config: StorybookConfig = {
 	stories: ['../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
-	addons: [],
+	addons: ['@storybook/addon-docs'],
 	framework: {
 		// name: getAbsolutePath('@storybook/react-vite'),
 		name: '@makcbrain/storybook-framework-react-esbuild',

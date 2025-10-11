@@ -26,6 +26,7 @@ export const getEsbuildConfig = async (
 
 	const config: BuildOptions = {
 		entryPoints: [
+			'virtualSetup.js', // Setup module - must be loaded first
 			'virtualApp.js', // Main entry point
 			...stories, // All .stories files
 		],

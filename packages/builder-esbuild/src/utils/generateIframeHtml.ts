@@ -80,6 +80,8 @@ export const generateIframeHtml = async (
 		  <div id="storybook-root"></div>
 		  <div id="storybook-docs"></div>
 
+		  <!-- Setup Module - must be loaded first -->
+		  <script type="module" src="${esbuildServerUrl}/virtualSetup.js"></script>
 		  <!-- Main Entry Point -->
 		  <script type="module" src="${esbuildServerUrl}/virtualApp.js"></script>
 		</body>
