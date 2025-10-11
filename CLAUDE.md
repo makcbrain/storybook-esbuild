@@ -8,8 +8,8 @@ This is a monorepo for Storybook framework extensions, specifically focused on R
 
 **Repository Structure:**
 - Root package.json defines the monorepo with workspaces in `packages/*`
-- `packages/builder-esbuild/` - Builder package for Storybook with esbuild support (@makcbrain/builder-esbuild)
-- `packages/storybook-framework-react-esbuild/` - Framework package for Storybook with React and esbuild support (@makcbrain/storybook-framework-react-esbuilfld)
+- `packages/builder-esbuild/` - Builder package for Storybook with esbuild support (@makcbrain/storybook-builder-esbuild)
+- `packages/framework-react-esbuild/` - Framework package for Storybook with React and esbuild support (@makcbrain/storybook-framework-react-esbuild)
 - `stories/` - Test stories and components for Storybook development
 
 **Current Development Status:**
