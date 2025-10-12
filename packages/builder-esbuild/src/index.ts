@@ -20,6 +20,8 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 
 	ctx = await createEsbuildContext(stories, options);
 
+	await ctx.watch();
+
 	const serveResult = await ctx.serve({
 		servedir: '.storybook/esbuild-out',
 		port: 0, // Auto-select port

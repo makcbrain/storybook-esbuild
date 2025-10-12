@@ -80,6 +80,16 @@ export const generateIframeHtml = async (
 		  <div id="storybook-root"></div>
 		  <div id="storybook-docs"></div>
 
+		  <!-- Live Reload (Development Only) -->
+		  <script>
+		    if (${configType === 'DEVELOPMENT'}) {
+		      new EventSource('${esbuildServerUrl}/esbuild').addEventListener('change', () => {
+		        console.log('[ESBuild Builder] File changed, reloading...');
+		        location.reload();
+		      });
+		    }
+		  </script>
+
 		  <!-- Setup Module - must be loaded first -->
 		  <script type="module" src="${esbuildServerUrl}/virtualSetup.js"></script>
 		  <!-- Main Entry Point -->
