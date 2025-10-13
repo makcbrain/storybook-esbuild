@@ -21,7 +21,6 @@ export const getEsbuildConfig = async (
 ): Promise<BuildOptions> => {
 	const { presets } = options;
 
-	// Get settings from presets
 	const envs = await presets.apply<Record<string, string>>('env');
 
 	const config: BuildOptions = {

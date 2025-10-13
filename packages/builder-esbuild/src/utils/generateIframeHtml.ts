@@ -8,7 +8,6 @@ export const generateIframeHtml = async (
 ): Promise<string> => {
 	const { configType, features, presets } = options;
 
-	// Get all required configuration from presets
 	const [
 		frameworkOptions,
 		headHtmlSnippet,
@@ -38,12 +37,10 @@ export const generateIframeHtml = async (
 		importPathMatcher: specifier.importPathMatcher.source,
 	}));
 
-	// Prepare other globals (e.g., for test blocks)
 	const otherGlobals = {
 		...(build?.test?.disableBlocks ? { __STORYBOOK_BLOCKS_EMPTY_MODULE__: {} } : {}),
 	};
 
-	// Generate OTHER_GLOBALS code
 	const otherGlobalsCode = Object.entries(otherGlobals)
 		.map(([k, v]) => `window["${k}"] = ${JSON.stringify(v)};`)
 		.join('\n    ');

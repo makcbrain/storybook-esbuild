@@ -9,7 +9,9 @@ const isAnnotationObject = (value: unknown): value is { absolute: string } => {
 	return typeof value === 'object' && value !== null && 'absolute' in value;
 };
 
-// Generate main entry point
+/**
+ * Generate main entry point
+ */
 export const generateAppEntryCode = async (options: Options): Promise<string> => {
 	const { presets, configDir } = options;
 

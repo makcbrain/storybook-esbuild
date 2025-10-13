@@ -15,7 +15,7 @@ export const listStories = async (options: Options): Promise<string[]> => {
 		workingDir: process.cwd(),
 	});
 
-	const storyFiles = (
+	return (
 		await Promise.all(
 			normalizedStories.map(async ({ directory, files }) => {
 				const absoluteDirectory = isAbsolute(directory)
@@ -31,7 +31,5 @@ export const listStories = async (options: Options): Promise<string[]> => {
 		)
 	)
 		.flat()
-		.sort(); // Sort for deterministic builds
-
-	return storyFiles;
+		.sort();
 };
