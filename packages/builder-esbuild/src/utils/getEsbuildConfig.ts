@@ -1,12 +1,13 @@
-import { join } from 'node:path';
 import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
 import type { BuildOptions } from 'esbuild';
 import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
 
 import { csfPlugin } from '../plugins/csfPlugin.js';
+import { reactDocGenPlugin } from '../plugins/reactDocGenPlugin.js';
 import { virtualModulesPlugin } from '../plugins/virtualModulesPlugin.js';
 import type { BuilderOptions } from '../types.js';
+import { getAbsolutePathToDistDir } from './getAbsolutePathToDistDir.js';
 import { getGlobalExternalsMapping } from './getGlobalExternalsMapping.js';
 
 const stringifyEnvs = (envs: Record<string, string>): Record<string, string> => {
@@ -52,7 +53,7 @@ export const getEsbuildConfig = async (
 			'virtualApp.js', // Main entry point
 			...stories, // All .stories files
 		],
-		outdir: join(options.configDir, 'esbuild-out'),
+		outdir: getAbsolutePathToDistDir(options),
 		outbase: process.cwd(),
 		bundle: true,
 		splitting: true,
@@ -69,6 +70,7 @@ export const getEsbuildConfig = async (
 			// This maps imports like 'storybook/preview-api' to window.__STORYBOOK_MODULE_PREVIEW_API__
 			globalExternals(getGlobalExternalsMapping(globalsNameReferenceMap)),
 			virtualModulesPlugin(options),
+			reactDocGenPlugin(),
 			csfPlugin(),
 			...(userEsbuildConfig.plugins || []),
 		],

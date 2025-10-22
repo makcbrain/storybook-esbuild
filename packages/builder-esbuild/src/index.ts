@@ -1,8 +1,10 @@
 import type { BuildContext } from 'esbuild';
 
 import type { EsbuildBuilder } from './types.ts';
+import { clearDistDirectory } from './utils/clearDistDirectory.js';
 import { createEsbuildContext } from './utils/createEsbuildContext.js';
 import { generateIframeHtml } from './utils/generateIframeHtml.js';
+import { getAbsolutePathToDistDir } from './utils/getAbsolutePathToDistDir.js';
 import { listStories } from './utils/listStories.js';
 
 export type * from './types.ts';
@@ -16,6 +18,8 @@ export const bail = async (): Promise<void> => {
 export const start: EsbuildBuilder['start'] = async (params) => {
 	const { startTime, options, router } = params;
 
+	await clearDistDirectory(options);
+
 	const stories = await listStories(options);
 
 	ctx = await createEsbuildContext(stories, options);
@@ -23,7 +27,7 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 	await ctx.watch();
 
 	const serveResult = await ctx.serve({
-		servedir: '.storybook/esbuild-out',
+		servedir: getAbsolutePathToDistDir(options),
 		port: 0, // Auto-select port
 		cors: {
 			origin: '*',

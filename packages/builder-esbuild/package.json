@@ -28,6 +28,7 @@
 		"@fal-works/esbuild-plugin-global-externals": "2.1.2",
 		"dedent": "1.7.0",
 		"glob": "11.0.3",
+		"react-docgen": "8.0.2",
 		"slash": "5.1.0"
 	}
 }
