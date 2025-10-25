@@ -34,9 +34,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@makcbrain/storybook-builder-esbuild": "workspace:*",
-      },
-      "peerDependencies": {
-        "@storybook/react": "^9.1.7",
+        "@storybook/react": "9.1.13",
       },
     },
   },
