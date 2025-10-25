@@ -12,11 +12,6 @@ This is a monorepo for Storybook framework extensions, specifically focused on R
 - `packages/framework-react-esbuild/` - Framework package for Storybook with React and esbuild support (@makcbrain/storybook-framework-react-esbuild)
 - `stories/` - Test stories and components for Storybook development
 
-**Current Development Status:**
-- Storybook is currently configured with `@storybook/react-vite` framework for testing and debugging purposes
-- This is a temporary setup to compare functionality with the target `@makcbrain/storybook-framework-react-esbuild` framework
-- **Goal:** Migrate to use `@makcbrain/storybook-framework-react-esbuild` as the primary framework
-
 **Technology Stack:**
 - **Runtime:** Bun (>=1.2.20)
 - **Build:** esbuild (0.25.9)  
