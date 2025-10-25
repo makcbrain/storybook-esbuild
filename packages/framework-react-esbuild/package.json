@@ -13,8 +13,10 @@
 		"LICENSE",
 		"package.json"
 	],
+	"peerDependencies": {
+		"@storybook/react": "^9.1.7"
+	},
 	"dependencies": {
-		"@storybook/react": "9.1.7",
 		"@makcbrain/storybook-builder-esbuild": "workspace:*"
 	},
 	"exports": {
