@@ -3,7 +3,6 @@ import type { BuildOptions } from 'esbuild';
 import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
 
-import { csfPlugin } from '../plugins/csfPlugin.js';
 import { reactDocGenPlugin } from '../plugins/reactDocGenPlugin.js';
 import { virtualModulesPlugin } from '../plugins/virtualModulesPlugin.js';
 import type { BuilderOptions } from '../types.js';
@@ -71,7 +70,6 @@ export const getEsbuildConfig = async (
 			globalExternals(getGlobalExternalsMapping(globalsNameReferenceMap)),
 			virtualModulesPlugin(options),
 			reactDocGenPlugin(),
-			csfPlugin(),
 			...(userEsbuildConfig.plugins || []),
 		],
 	};
