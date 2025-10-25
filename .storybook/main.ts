@@ -5,11 +5,19 @@ const config: StorybookConfig = {
 	addons: ['@storybook/addon-docs'],
 	framework: {
 		name: '@makcbrain/storybook-framework-react-esbuild',
-		options: {},
+		options: {
+			builder: {
+				esbuildConfig: ({ isProduction }) => {
+					return {
+						sourcemap: !isProduction,
+					};
+				},
+			},
+		},
 	},
-	// esbuildFinal: (config) => {
-	// 	console.log('=== esbuildFinal storybook/main', config);
-	// 	return config;
-	// },
+	esbuildFinal: (config) => {
+		return config;
+	},
 };
+
 export default config;

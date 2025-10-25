@@ -2,7 +2,6 @@ import type { BuilderOptions, StorybookConfigEsbuild } from '@makcbrain/storyboo
 import type {
 	CompatibleString,
 	StorybookConfig as StorybookConfigBase,
-	TypescriptOptions as TypescriptOptionsBase,
 } from 'storybook/internal/types';
 
 type FrameworkName = CompatibleString<'@makcbrain/storybook-framework-react-esbuild'>;
@@ -34,21 +33,10 @@ type StorybookConfigFramework = {
 		  };
 };
 
-type TypescriptOptions = TypescriptOptionsBase & {
-	/**
-	 * Sets the type of Docgen when working with React and TypeScript
-	 *
-	 * @default `'react-docgen'`
-	 */
-	reactDocgen: 'react-docgen-typescript' | 'react-docgen' | false;
-};
-
 /** The interface for Storybook configuration in `main.ts` files. */
 export type StorybookConfig = Omit<
 	StorybookConfigBase,
-	keyof StorybookConfigEsbuild | keyof StorybookConfigFramework | 'typescript'
+	keyof StorybookConfigEsbuild | keyof StorybookConfigFramework
 > &
 	StorybookConfigEsbuild &
-	StorybookConfigFramework & {
-		typescript?: Partial<TypescriptOptions>;
-	};
+	StorybookConfigFramework;
