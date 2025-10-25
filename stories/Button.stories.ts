@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { Meta, StoryObj } from '@makcbrain/storybook-framework-react-esbuild';
 import { fn } from 'storybook/test';
 
 import { Button } from './Button.js';

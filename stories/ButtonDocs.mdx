@@ -1,0 +1,42 @@
+import { Meta, Canvas, Controls } from '@storybook/addon-docs/blocks';
+import * as ButtonStories from './Button.stories.ts';
+
+<Meta title="MDX Button" />
+
+# Button Component
+
+This is a demonstration of the Button component using MDX format.
+
+## Primary Button
+
+The primary button is used for the main call-to-action.
+
+<Canvas of={ButtonStories.Primary} />
+
+## Secondary Button
+
+The secondary button is used for less prominent actions.
+
+<Canvas of={ButtonStories.Secondary} />
+
+## Size Variants
+
+### Large Button
+
+<Canvas of={ButtonStories.Large} />
+
+### Small Button
+
+<Canvas of={ButtonStories.Small} />
+
+## Props
+
+<Controls of={ButtonStories.Primary} />
+
+## Usage
+
+```tsx
+import { Button } from './Button';
+
+<Button primary label="Click me" onClick={() => console.log('Clicked!')} />
+```

@@ -3,7 +3,7 @@
 import type { StorybookConfig } from '@makcbrain/storybook-framework-react-esbuild';
 
 const config: StorybookConfig = {
-	stories: ['../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+	stories: ['../stories/**/*.mdx', '../stories/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
 	addons: ['@storybook/addon-docs'],
 	framework: {
 		// name: '@storybook/react-vite',

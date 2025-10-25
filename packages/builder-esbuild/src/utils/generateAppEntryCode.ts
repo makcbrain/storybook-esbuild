@@ -41,7 +41,7 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 			const key = story.startsWith('./') ? relative : `./${relative}`;
 
 			// Get CSS file path by replacing story extension with .css
-			const cssPath = key.replace(/\.[jt]sx?$/, '.css');
+			const cssPath = key.replace(/\.([jt]sx?|mdx)$/, '.css');
 
 			return `'${key}': () => {
 				const cssUrl = new URL('${cssPath}', import.meta.url);

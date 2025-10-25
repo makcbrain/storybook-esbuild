@@ -1,4 +1,5 @@
 import { globalExternals } from '@fal-works/esbuild-plugin-global-externals';
+import getMdxPlugin from '@mdx-js/esbuild';
 import type { BuildOptions } from 'esbuild';
 import { globalsNameReferenceMap } from 'storybook/internal/preview/globals';
 import type { Options } from 'storybook/internal/types';
@@ -70,6 +71,7 @@ export const getEsbuildConfig = async (
 			globalExternals(getGlobalExternalsMapping(globalsNameReferenceMap)),
 			virtualModulesPlugin(options),
 			reactDocGenPlugin(),
+			getMdxPlugin({ jsx: true }),
 			...(userEsbuildConfig.plugins || []),
 		],
 	};
