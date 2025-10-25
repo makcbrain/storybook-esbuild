@@ -31,6 +31,7 @@
 		"storybook": "bunx storybook dev -p 6006",
 		"build-storybook": "storybook tools",
 		"tsl": "bun run build && bun run storybook",
+		"reinstallDeps": "rm -rf node_modules packages/builder-esbuild/node_modules packages/framework-react-esbuild/node_modules bun.lock && bun i",
 		"precommit": "bun run lint && git add . && bun run typecheck && bun run test",
 		"prepare": "husky"
 	}
