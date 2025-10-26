@@ -5,6 +5,25 @@
 	"description": "Framework for Storybook with supporting React and esbuild",
 	"license": "MIT",
 	"type": "module",
+	"keywords": [
+		"storybook",
+		"esbuild",
+		"framework",
+		"react",
+		"builder"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/makcbrain/storybook-esbuild.git",
+		"directory": "packages/framework-react-esbuild"
+	},
+	"bugs": {
+		"url": "https://github.com/makcbrain/storybook-esbuild/issues"
+	},
+	"homepage": "https://github.com/makcbrain/storybook-esbuild#readme",
+	"publishConfig": {
+		"access": "public"
+	},
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
