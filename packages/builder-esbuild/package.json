@@ -1,6 +1,6 @@
 {
 	"name": "@makcbrain/storybook-builder-esbuild",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
 	"description": "Builder for Storybook with supporting esbuild",
 	"license": "MIT",
@@ -50,5 +50,8 @@
 		"glob": "11.0.3",
 		"react-docgen": "8.0.2",
 		"slash": "5.1.0"
+	},
+	"peerDependencies": {
+		"esbuild": "^0.10.0"
 	}
 }
