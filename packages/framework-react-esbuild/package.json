@@ -1,6 +1,6 @@
 {
 	"name": "@makcbrain/storybook-framework-react-esbuild",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
 	"description": "Framework for Storybook with supporting React and esbuild",
 	"license": "MIT",
@@ -29,6 +29,7 @@
 		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"build": "rm -rf dist && bunx tsc"
+		"build": "rm -rf dist && bunx tsc",
+		"prepublishOnly": "(cd ../../ && bun run precommit) && bun run build"
 	}
 }
