@@ -34,7 +34,7 @@
     },
     "packages/framework-react-esbuild": {
       "name": "@makcbrain/storybook-framework-react-esbuild",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "dependencies": {
         "@makcbrain/storybook-builder-esbuild": "workspace:*",
         "@storybook/react": "9.1.13",
