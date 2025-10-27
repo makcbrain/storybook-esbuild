@@ -1,6 +1,6 @@
 {
 	"name": "@makcbrain/storybook-builder-esbuild",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
 	"description": "Builder for Storybook with supporting esbuild",
 	"license": "MIT",
@@ -19,7 +19,7 @@
 	"bugs": {
 		"url": "https://github.com/makcbrain/storybook-esbuild/issues"
 	},
-	"homepage": "https://github.com/makcbrain/storybook-esbuild#readme",
+	"homepage": "https://github.com/makcbrain/storybook-esbuild/tree/main/packages/builder-esbuild",
 	"publishConfig": {
 		"access": "public"
 	},

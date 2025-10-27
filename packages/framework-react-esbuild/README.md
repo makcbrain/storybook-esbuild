@@ -16,6 +16,14 @@ This framework integrates React with Storybook using esbuild as the build system
 npm install --save-dev @makcbrain/storybook-framework-react-esbuild
 ```
 
+**Important:** This package requires `@storybook/react` as a peer dependency. Make sure you have `@storybook/react` installed with the same version as your `storybook` package:
+
+```bash
+npm install --save-dev @storybook/react
+```
+
+The versions of `storybook` and `@storybook/react` must match (e.g., both should be `9.x.x`).
+
 ## Configuration
 
 ### Basic Setup
