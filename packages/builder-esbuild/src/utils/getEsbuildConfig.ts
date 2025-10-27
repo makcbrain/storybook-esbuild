@@ -10,6 +10,11 @@ import type { BuilderOptions } from '../types.js';
 import { getAbsolutePathToDistDir } from './getAbsolutePathToDistDir.js';
 import { getGlobalExternalsMapping } from './getGlobalExternalsMapping.js';
 
+/**
+ * Describes property "framework" in the .storybook/main.ts
+ */
+type FrameworkConfig = { options?: { builder?: BuilderOptions } } | string;
+
 const stringifyEnvs = (envs: Record<string, string>): Record<string, string> => {
 	return Object.entries(envs).reduce<Record<string, string>>((acc, [key, value]) => {
 		acc[`process.env.${key}`] = JSON.stringify(value);
@@ -24,8 +29,8 @@ export const getEsbuildConfig = async (
 	const { presets } = options;
 
 	const envs = await presets.apply<Record<string, string>>('env');
-	const frameworkOptions = await presets.apply<{ builder?: BuilderOptions }>('framework');
-	const builderOptions = frameworkOptions?.builder;
+	const framework = await presets.apply<FrameworkConfig>('framework');
+	const builderOptions = typeof framework === 'object' ? framework?.options?.builder : undefined;
 	let userEsbuildConfig: BuildOptions = {};
 
 	if (typeof builderOptions?.esbuildConfig === 'object') {
