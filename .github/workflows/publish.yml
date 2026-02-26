@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Build
+        run: bun run build
+
       - name: Typecheck
         run: bun run typecheck
 
@@ -42,9 +45,6 @@ jobs:
         run: |
           cd packages/builder-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
           cd ../framework-react-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
-
-      - name: Build
-        run: bun run build
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
