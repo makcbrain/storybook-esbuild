@@ -1,0 +1,75 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Test
+        run: bun run test
+
+      - name: Bump versions
+        run: |
+          cd packages/builder-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
+          cd ../framework-react-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
+
+      - name: Build
+        run: bun run build
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish builder-esbuild
+        run: npm publish --provenance --access public --ignore-scripts
+        working-directory: packages/builder-esbuild
+
+      - name: Publish framework-react-esbuild
+        run: npm publish --provenance --access public --ignore-scripts
+        working-directory: packages/framework-react-esbuild
+
+      - name: Get new version
+        id: version
+        run: echo "version=$(node -p "require('./packages/builder-esbuild/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/builder-esbuild/package.json packages/framework-react-esbuild/package.json
+          git commit -m "v${{ steps.version.outputs.version }}"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push
+          git push --tags
