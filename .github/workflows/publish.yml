@@ -43,8 +43,18 @@ jobs:
 
       - name: Bump versions
         run: |
-          cd packages/builder-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
-          cd ../framework-react-esbuild && npm version ${{ inputs.bump }} --no-git-tag-version
+          node -e "
+            const fs = require('fs');
+            const semver = require('semver');
+            const bump = '${{ inputs.bump }}';
+            for (const pkg of ['packages/builder-esbuild', 'packages/framework-react-esbuild']) {
+              const path = pkg + '/package.json';
+              const json = JSON.parse(fs.readFileSync(path, 'utf8'));
+              json.version = semver.inc(json.version, bump);
+              fs.writeFileSync(path, JSON.stringify(json, null, '\t') + '\n');
+              console.log(pkg + ': ' + json.version);
+            }
+          "
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
