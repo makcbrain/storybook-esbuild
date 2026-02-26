@@ -40,6 +40,23 @@ The project uses modern TypeScript with strict settings:
 - No emit (bundler handles compilation)
 - Import extensions allowed for bundler compatibility
 
+## Release Process
+
+Both packages are always versioned and published together. Publishing is automated via GitHub Actions with OIDC trusted publishing (no npm tokens needed).
+
+**How to release:**
+1. Go to GitHub → Actions → "Publish" → Run workflow
+2. Select bump type: `patch`, `minor`, or `major`
+3. The workflow will: build, typecheck, test, bump versions, publish both packages to npm, commit version changes, and create a git tag
+
+**Workflow:** `.github/workflows/publish.yml`
+
+**Publish order:** `builder-esbuild` first, then `framework-react-esbuild` (framework depends on builder).
+
+**Prerequisites (one-time setup):**
+- Configure OIDC trusted publishing on npmjs.com for each package under Access settings
+- Link to the `makcbrain/storybook-esbuild` repository and `publish.yml` workflow
+
 ## Claude Instructions
 
 **Dependency Management:**
