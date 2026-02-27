@@ -1,6 +1,6 @@
 {
 	"name": "@makcbrain/storybook-builder-esbuild",
-	"version": "1.2.2",
+	"version": "1.3.0",
 	"author": "Maksim Kadochnikov <makс.brain@gmail.com>",
 	"description": "Builder for Storybook with supporting esbuild",
 	"license": "MIT",
