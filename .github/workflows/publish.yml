@@ -47,13 +47,24 @@ jobs:
             const fs = require('fs');
             const semver = require('semver');
             const bump = '${{ inputs.bump }}';
+            const versions = {};
             for (const pkg of ['packages/builder-esbuild', 'packages/framework-react-esbuild']) {
               const path = pkg + '/package.json';
               const json = JSON.parse(fs.readFileSync(path, 'utf8'));
               json.version = semver.inc(json.version, bump);
+              versions[json.name] = json.version;
               fs.writeFileSync(path, JSON.stringify(json, null, '\t') + '\n');
               console.log(pkg + ': ' + json.version);
             }
+
+            const fwPath = 'packages/framework-react-esbuild/package.json';
+            const fw = JSON.parse(fs.readFileSync(fwPath, 'utf8'));
+            for (const [dep, ver] of Object.entries(fw.dependencies || {})) {
+              if (ver.startsWith('workspace:') && versions[dep]) {
+                fw.dependencies[dep] = versions[dep];
+              }
+            }
+            fs.writeFileSync(fwPath, JSON.stringify(fw, null, '\t') + '\n');
           "
 
       - name: Setup Node.js
