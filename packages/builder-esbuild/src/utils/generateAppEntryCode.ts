@@ -40,8 +40,9 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 			const relative = path.relative(process.cwd(), story);
 			const key = story.startsWith('./') ? relative : `./${relative}`;
 
-			// Get CSS file path by replacing story extension with .css
+			// Get CSS and JS output paths by replacing the story extension
 			const cssPath = key.replace(/\.([jt]sx?|mdx)$/, '.css');
+			const jsOutputPath = key.replace(/\.([jt]sx?|mdx)$/, '.js');
 
 			return `'${key}': () => {
 				const cssUrl = new URL('${cssPath}', import.meta.url);
@@ -54,7 +55,10 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 					document.head.appendChild(link);
 				}
 
-				return import('${story}');
+				// Use a variable so esbuild can't statically resolve this import.
+				// This prevents story CSS from being pulled into virtualApp.css.
+				const storyOutputPath = '${jsOutputPath}';
+				return import(storyOutputPath);
 			}`;
 		})
 		.join(',\n    ');
