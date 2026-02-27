@@ -25,6 +25,7 @@ const stringifyEnvs = (envs: Record<string, string>): Record<string, string> => 
 export const getEsbuildConfig = async (
 	stories: string[],
 	options: Options,
+	onRebuild?: () => void,
 ): Promise<BuildOptions> => {
 	const { presets } = options;
 
@@ -78,6 +79,14 @@ export const getEsbuildConfig = async (
 			reactDocGenPlugin(),
 			getMdxPlugin({ jsx: true }),
 			...(userEsbuildConfig.plugins || []),
+			...(onRebuild
+				? [
+						{
+							name: 'rebuild-notify',
+							setup: (build: { onEnd: (cb: () => void) => void }) => build.onEnd(onRebuild),
+						},
+					]
+				: []),
 		],
 	};
 

@@ -3,6 +3,7 @@ import type { BuildContext } from 'esbuild';
 import type { EsbuildBuilder } from './types.ts';
 import { clearDistDirectory } from './utils/clearDistDirectory.js';
 import { createEsbuildContext } from './utils/createEsbuildContext.js';
+import { createStaticServer } from './utils/createStaticServer.js';
 import { generateIframeHtml } from './utils/generateIframeHtml.js';
 import { getAbsolutePathToDistDir } from './utils/getAbsolutePathToDistDir.js';
 import { listStories } from './utils/listStories.js';
@@ -21,20 +22,15 @@ export const start: EsbuildBuilder['start'] = async (params) => {
 	await clearDistDirectory(options);
 
 	const stories = await listStories(options);
+	const distDir = getAbsolutePathToDistDir(options);
 
-	ctx = await createEsbuildContext(stories, options);
+	const server = await createStaticServer(distDir);
+
+	ctx = await createEsbuildContext(stories, options, server.notifyReload);
 
 	await ctx.watch();
 
-	const serveResult = await ctx.serve({
-		servedir: getAbsolutePathToDistDir(options),
-		port: 0, // Auto-select port
-		cors: {
-			origin: '*',
-		},
-	});
-
-	const esbuildServerUrl = `http://localhost:${serveResult.port}`;
+	const esbuildServerUrl = server.url;
 
 	console.log(`[ESBuild Builder] Dev server started at ${esbuildServerUrl}`);
 

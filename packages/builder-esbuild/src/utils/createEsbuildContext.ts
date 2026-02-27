@@ -6,8 +6,9 @@ import { getEsbuildConfig } from './getEsbuildConfig.js';
 export const createEsbuildContext = async (
 	stories: string[],
 	options: Options,
+	onRebuild?: () => void,
 ): Promise<esbuild.BuildContext> => {
-	const config = await getEsbuildConfig(stories, options);
+	const config = await getEsbuildConfig(stories, options, onRebuild);
 
 	return esbuild.context(config);
 };
