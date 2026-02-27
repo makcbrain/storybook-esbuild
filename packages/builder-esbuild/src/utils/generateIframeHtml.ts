@@ -25,6 +25,7 @@ export const generateIframeHtml = async (
 		    window.module = undefined;
 		    window.global = window;
 		  </script>
+		  <link rel="stylesheet" href="${esbuildServerUrl}/virtualApp.css" onerror="this.remove()">
 		  ${headHtmlSnippet || ''}
 		</head>
 		<body>
