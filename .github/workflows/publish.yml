@@ -87,6 +87,16 @@ jobs:
         id: version
         run: echo "version=$(node -p "require('./packages/builder-esbuild/package.json').version")" >> "$GITHUB_OUTPUT"
 
+      - name: Restore workspace references
+        run: |
+          node -e "
+            const fs = require('fs');
+            const fwPath = 'packages/framework-react-esbuild/package.json';
+            const fw = JSON.parse(fs.readFileSync(fwPath, 'utf8'));
+            fw.dependencies['@makcbrain/storybook-builder-esbuild'] = 'workspace:*';
+            fs.writeFileSync(fwPath, JSON.stringify(fw, null, '\t') + '\n');
+          "
+
       - name: Commit and tag
         run: |
           git config user.name "github-actions[bot]"

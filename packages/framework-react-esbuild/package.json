@@ -33,7 +33,7 @@
 		"package.json"
 	],
 	"dependencies": {
-		"@makcbrain/storybook-builder-esbuild": "1.3.2"
+		"@makcbrain/storybook-builder-esbuild": "workspace:*"
 	},
 	"peerDependencies": {
 		"@storybook/react": ">=9.0.0"
