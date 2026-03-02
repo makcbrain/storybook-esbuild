@@ -35,26 +35,23 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 
 	const configs = previewAnnotations.map((_, index) => `previewAnnotation${index}`).join(', ');
 
+	const storyCSSEntries = stories
+		.map((story) => {
+			const relative = path.relative(process.cwd(), story);
+			const key = story.startsWith('./') ? relative : `./${relative}`;
+			const cssPath = key.replace(/\.([jt]sx?|mdx)$/, '.css');
+
+			return `'${key}': new URL('${cssPath}', import.meta.url).href`;
+		})
+		.join(',\n        ');
+
 	const storiesImports = stories
 		.map((story) => {
 			const relative = path.relative(process.cwd(), story);
 			const key = story.startsWith('./') ? relative : `./${relative}`;
-
-			// Get CSS and JS output paths by replacing the story extension
-			const cssPath = key.replace(/\.([jt]sx?|mdx)$/, '.css');
 			const jsOutputPath = key.replace(/\.([jt]sx?|mdx)$/, '.js');
 
 			return `'${key}': () => {
-				const cssUrl = new URL('${cssPath}', import.meta.url);
-
-				if (!document.querySelector('link[data-path="${cssPath}"]')) {
-					const link = document.createElement('link');
-					link.rel = 'stylesheet';
-					link.href = cssUrl.href;
-					link.setAttribute('data-path', '${cssPath}');
-					document.head.appendChild(link);
-				}
-
 				// Use a variable so esbuild can't statically resolve this import.
 				// This prevents story CSS from being pulled into virtualApp.css.
 				const storyOutputPath = '${jsOutputPath}';
@@ -85,6 +82,64 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 		  return composeConfigs([${configs}]);
 		};
 
+		const __storyCSSMap = {
+		    ${storyCSSEntries}
+		};
+		let __activeStoryCSSKey = null;
+
+		function __findCSSUrl(importPath) {
+		    var url = __storyCSSMap[importPath];
+		    if (url) return url;
+		    var alt = importPath.startsWith('./') ? importPath.slice(2) : './' + importPath;
+		    return __storyCSSMap[alt] || null;
+		}
+
+		function __loadStoryCSS(importPath) {
+		    if (__activeStoryCSSKey === importPath) return;
+		    document.querySelectorAll('link[data-story-css]').forEach(function(el) { el.remove(); });
+		    var cssUrl = __findCSSUrl(importPath);
+		    if (cssUrl) {
+		        var link = document.createElement('link');
+		        link.rel = 'stylesheet';
+		        link.href = cssUrl;
+		        link.setAttribute('data-story-css', importPath);
+		        document.head.appendChild(link);
+		    }
+		    __activeStoryCSSKey = importPath;
+		}
+
+		function __getImportPathForStory(storyId) {
+		    var store = window.__STORYBOOK_STORY_STORE__
+		        || (window.__STORYBOOK_PREVIEW__ && window.__STORYBOOK_PREVIEW__.storyStore);
+		    if (!store) return null;
+
+		    try {
+		        var idx = store.storyIndex || store._storyIndex;
+		        if (idx) {
+		            var entries = idx.entries || idx._entries;
+		            if (entries && entries[storyId]) return entries[storyId].importPath;
+		        }
+		    } catch(e) {}
+
+		    try {
+		        if (store.fromId) {
+		            var entry = store.fromId(storyId);
+		            if (entry && entry.importPath) return entry.importPath;
+		        }
+		    } catch(e) {}
+
+		    try {
+		        if (store.raw) {
+		            var all = store.raw();
+		            for (var i = 0; i < all.length; i++) {
+		                if (all[i].id === storyId) return all[i].importPath;
+		            }
+		        }
+		    } catch(e) {}
+
+		    return null;
+		}
+
 		window.__STORYBOOK_IMPORT_FN__ = (function() {
 		  const importers = {
 		    ${storiesImports}
@@ -108,5 +163,28 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 		);
 
 		window.__STORYBOOK_STORY_STORE__ = window.__STORYBOOK_STORY_STORE__ || window.__STORYBOOK_PREVIEW__.storyStore;
+
+		function __resolveAndLoadCSS(storyId) {
+		    if (!storyId) return;
+		    var importPath = __getImportPathForStory(storyId);
+		    if (importPath) {
+		        __loadStoryCSS(importPath);
+		    }
+		}
+
+		channel.on('storyChanged', function(storyId) {
+		    __resolveAndLoadCSS(storyId);
+		});
+
+		channel.on('storyRendered', function(storyId) {
+		    __resolveAndLoadCSS(storyId);
+		    if (!storyId) {
+		        var preview = window.__STORYBOOK_PREVIEW__;
+		        var sid = null;
+		        try { sid = preview.currentSelection.storyId; } catch(e) {}
+		        if (!sid) try { sid = preview.selectionStore.selection.storyId; } catch(e) {}
+		        __resolveAndLoadCSS(sid);
+		    }
+		});
 	`;
 };
