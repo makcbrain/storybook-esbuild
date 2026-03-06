@@ -47,11 +47,12 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 			return `'${key}': () => {
 				const cssUrl = new URL('${cssPath}', import.meta.url);
 
-				if (!document.querySelector('link[data-path="${cssPath}"]')) {
+				if (!document.querySelector('link[data-story-path="${key}"]')) {
 					const link = document.createElement('link');
 					link.rel = 'stylesheet';
 					link.href = cssUrl.href;
-					link.setAttribute('data-path', '${cssPath}');
+					link.setAttribute('data-story-path', '${key}');
+					link.disabled = true;
 					document.head.appendChild(link);
 				}
 
@@ -100,6 +101,20 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 		    return await importer();
 		  };
 		})();
+
+		// Activate only the CSS for the currently selected story
+		channel.on('currentStoryWasSet', async ({ storyId }) => {
+		  const store = window.__STORYBOOK_PREVIEW__?.storyStore;
+		  if (!store) return;
+
+		  try {
+		    const entry = await store.storyIdToEntry(storyId);
+
+		    document.querySelectorAll('link[data-story-path]').forEach((link) => {
+		      link.disabled = link.getAttribute('data-story-path') !== entry.importPath;
+		    });
+		  } catch {}
+		});
 
 		// Initialize PreviewWeb
 		window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
