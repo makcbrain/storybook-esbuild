@@ -52,7 +52,7 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 					link.rel = 'stylesheet';
 					link.href = cssUrl.href;
 					link.setAttribute('data-story-path', '${key}');
-					link.disabled = true;
+					link.disabled = activeStoryPath !== '${key}';
 					document.head.appendChild(link);
 				}
 
@@ -86,6 +86,23 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 		  return composeConfigs([${configs}]);
 		};
 
+		// Track which story's CSS should be active
+		let activeStoryPath = null;
+
+		channel.on('currentStoryWasSet', ({ storyId }) => {
+		  const storyIndex = window.__STORYBOOK_PREVIEW__?.storyStore?.storyIndex;
+		  if (!storyIndex) return;
+
+		  try {
+		    const entry = storyIndex.storyIdToEntry(storyId);
+		    activeStoryPath = entry.importPath;
+
+		    document.querySelectorAll('link[data-story-path]').forEach((link) => {
+		      link.disabled = link.getAttribute('data-story-path') !== activeStoryPath;
+		    });
+		  } catch {}
+		});
+
 		window.__STORYBOOK_IMPORT_FN__ = (function() {
 		  const importers = {
 		    ${storiesImports}
@@ -101,20 +118,6 @@ export const generateAppEntryCode = async (options: Options): Promise<string> =>
 		    return await importer();
 		  };
 		})();
-
-		// Activate only the CSS for the currently selected story
-		channel.on('currentStoryWasSet', async ({ storyId }) => {
-		  const store = window.__STORYBOOK_PREVIEW__?.storyStore;
-		  if (!store) return;
-
-		  try {
-		    const entry = await store.storyIdToEntry(storyId);
-
-		    document.querySelectorAll('link[data-story-path]').forEach((link) => {
-		      link.disabled = link.getAttribute('data-story-path') !== entry.importPath;
-		    });
-		  } catch {}
-		});
 
 		// Initialize PreviewWeb
 		window.__STORYBOOK_PREVIEW__ = window.__STORYBOOK_PREVIEW__ || new PreviewWeb(
